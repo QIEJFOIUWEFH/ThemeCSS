@@ -4,12 +4,14 @@ var gulp = require('gulp');
 // CSS related plugins
 var sass = require('gulp-sass');
 var autoprefixer = require( 'gulp-autoprefixer' );
+var minifycss = require( 'gulp-uglifycss' );
 
 // Utility plugins
 var plumber = require( 'gulp-plumber' );
 var gutil = require('gulp-util');
 var rename = require( 'gulp-rename' );
 var sourcemaps = require( 'gulp-sourcemaps' );
+var cache = require('gulp-cache');
 
 // JS related plugin
 var uglify = require( 'gulp-uglify' );
@@ -53,9 +55,10 @@ gulp.task('styles', function () {
 	gulp.src( [ styleSRC ] )
 		.pipe( plumber({ errorHandler: onError }) )
     .pipe( sourcemaps.init() )
-		.pipe( sass({ outputStyle: 'compressed' }) )
+		.pipe( sass({ outputStyle: 'compact' }) )
 		.pipe( autoprefixer({ browsers: [ 'last 2 versions', '> 5%', 'Firefox ESR' ] }) )
 		.pipe( rename( { suffix: '.min' } ) )
+		.pipe( minifycss() )
 		.pipe( sourcemaps.write( mapURL ) )
 		.pipe( gulp.dest( styleURL ) )
 		.pipe( reload({ stream: true }) );
@@ -92,6 +95,14 @@ function triggerPlumber( src, url ) {
 	.pipe( plumber() )
 	.pipe( gulp.dest( url ) );
 }
+
+
+/**
+ * Clean gulp cache
+ */
+gulp.task( 'clear', function () {
+ 	cache.clearAll();
+});
 
 
 /**
