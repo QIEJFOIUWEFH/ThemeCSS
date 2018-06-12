@@ -31,16 +31,19 @@
   padding: 100px 50px 80px 30px;
   overflow-y: auto;
   display: block;
-  color: $site-color-white;
+  color: $white;
   transform: translateX(350px);
   transition: 0.5s;
-  @include breakpoint(phone-portrait) { padding-right: 30px; }
+  @include phone-portrait { padding-right: 30px; 
+  }
   .menu { 
     display: block; 
   }
   .sf-menu {
     li {
-      &.sfHover { background: none; }
+      &.sfHover { 
+        background: none; 
+      }
       &:hover { 
         ul { background: none; }
       }
@@ -50,7 +53,9 @@
     &.sub-menu { 
       display: block !important; 
       position: relative;
-      li { border-bottom: $site-color-hover; }
+      li { 
+        border-bottom: $hover; 
+      }
       a {
         font-size: 14px;
         text-transform: capitalize;
@@ -59,15 +64,19 @@
     }
   }
   a {
-    color: $site-color-white;
+    color: $white;
     display: block;
     font-size: 16px;
     font-weight: 500;
     padding: 8px 0;
-    border-bottom: 1px solid $site-color-hover;
+    border-bottom: 1px solid $hover;
     text-transform: uppercase;
-    &:hover { color: rgba(255, 255, 255, 0.8); }
-    &.active { background: #6aa11c; }
+    &:hover { 
+      color: rgba(255, 255, 255, 0.8); 
+    }
+    &.active { 
+      background: #6aa11c; 
+    }
   }
   > ul {
     padding: 0;
@@ -91,7 +100,7 @@
         &:after {
           position: absolute;
           right: 0;
-          font-family: $site-fontawesome;
+          font-family: $fontawesome;
           speak: none;
           font-style: normal;
           font-weight: normal;
@@ -132,7 +141,9 @@
   height: 30px;
   z-index: 999999;
   border-bottom: none !important;
-  @include breakpoint(tablet) { display: block; }
+  @include tablet { 
+    display: block; 
+  }
   &:hover,
   &:focus,
   &:active {
@@ -148,14 +159,14 @@
     font: bold 14px/.4 Helvetica;
     text-transform: uppercase;
     text-indent: -55px;
-    background: $site-color-white;
+    background: $white;
     transition: all 0.2s ease-out;
     &:before,
     &:after {
       content: '';
       width: 25px;
       height: 2px;
-      background: $site-color-white;
+      background: $white;
       position: absolute;
       left: 0;
       transition: all 0.2s ease-out;
@@ -164,7 +175,7 @@
     &:after { bottom: -7px; }
   }
   &.site-nav-white {
-    > i { color: $site-color-white; }
+    > i { color: $white; }
   }
   &:hover {
     i {
@@ -176,14 +187,16 @@
     i {
       background: transparent;
       &:before,
-      &:active { background: $site-color-white; }
+      &:active { 
+        background: $white; 
+      }
       &:before {
         top: 0;
         transform: rotateZ(45deg);
       }
       &:after {
         bottom: 0;
-        background: $site-color-white;
+        background: $white;
         transform: rotateZ(-45deg);
       }
     }

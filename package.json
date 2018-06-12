@@ -1,10 +1,12 @@
 {
   "name": "empty",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Starter HTML Template",
   "main": "gulpfile.js",
   "dependencies": {
     "gulp-cache": "^1.0.2",
+    "gulp-clean-css": "^3.9.4",
+    "gulp-imagemin": "^4.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.3",
     "gulp-uglifycss": "^1.0.9"
@@ -13,7 +15,6 @@
     "browser-sync": "^2.18.13",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
-    "gulp-concat": "^2.6.1",
     "gulp-plumber": "^1.1.0",
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^3.0.0",

@@ -2,15 +2,15 @@
   box-sizing: border-box;
 }
 body {
-  font: 15px/28px $site-font;
+  font: 15px/28px $font;
   color: $site-color;
-  background: $site-color-gray;
+  background: $gray;
 }
 input,
 textarea,
 select {
   font-size: 14px;
-  font-family: $site-font;
+  font-family: $font;
   color: $site-color;
   border: 0;
   padding: 4px;
@@ -21,7 +21,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: $site-head-font;
+  font-family: $head-font;
   font-weight: 400;
   display: block;
   color: $site-color;
@@ -47,7 +47,7 @@ a {
     text-decoration: none;
     transition: all 0.2s ease-out 0s;
   }
-  &:hover { color: $site-color-hover; }
+  &:hover { color: $hover; }
   &:focus { outline: 0;  }
 }
 p { margin-bottom: 20px; }
@@ -55,7 +55,7 @@ iframe { vertical-align: top; }
 input,
 textarea {
   font-size: 15px;
-  font-family: $site-font;
+  font-family: $font;
   margin: 0;
   border-radius: 0;
 }
@@ -135,12 +135,12 @@ pre {
   margin-right: 0 !important;
 }
 ::selection {
-  background: $site-selection-color;
-  color: $site-color-white;
+  background: $selection-color;
+  color: $white;
 }
 ::-moz-selection {
-  background: $site-selection-color;
-  color: $site-color-white;
+  background: $selection-color;
+  color: $white;
 }
 #preloader {
   position: fixed;
@@ -148,7 +148,7 @@ pre {
   left: 0;
   right: 0;
   bottom: 0;
-  background: $site-color-white;
+  background: $white;
   z-index: 999999;
 }
 #status {
@@ -162,13 +162,24 @@ pre {
   background-position: center;
   margin: -100px 0 0 -100px;
 }
-.inside {
-  width: 1200px;
+.wrapper {
+  width: 1100px;
   margin: 0 auto;
-  @include breakpoint(tablet) { width: 96%; }
+  @include tablet {
+    max-width: 960px;
+  }
+  @include tablet-portrait {
+    max-width: 720px;
+  }
+  @include phone {
+    max-width: 540px;
+  }
+  @include phone-portrait {
+    max-width: 96%;
+  }
 }
-.inside-fluid {
-  width: 96%;
+.wrapper-fluid {
+  width: 100%;
   margin: 0 auto;
 }
 .pagination {

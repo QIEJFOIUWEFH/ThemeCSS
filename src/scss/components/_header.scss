@@ -6,10 +6,13 @@ header {
 
 // Logo
 .logo {
-  @include breakpoint(tablet-portrait) { width: 100%; }
+  @include tablet-portrait { 
+  	width: 100%; 
+  }
 }
 
 // Menu
 .menu {
-  @include breakpoint(tablet-portrait) { display: none; }
+  @include tablet-portrait { display: none; 
+  }
 }

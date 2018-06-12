@@ -1,26 +1,33 @@
-@mixin breakpoint($point) {
-  @if $point == tablet {
-    @media only screen and (max-width: 1200px) { @content; }
-  }
-  @else if $point == tablet-portrait {
-    @media only screen and (max-width: 980px) { @content; }
-  }
-  @else if $point == phone {
-    @media only screen and (max-width: 760px) { @content; }
-  }
-  @else if $point == phone-small {
-    @media only screen and (max-width: 680px) { @content; }
-  }
-  @else if $point == phone-vsmall {
-    @media only screen and (max-width: 580px) { @content; }
-  }
-  @else if $point == phone-portrait {
-    @media only screen and (max-width: 450px) { @content; }
-  }
-  @else if $point == phone-portrait-small {
-    @media only screen and (max-width: 400px) { @content; }
-  }
-  @else if $point == phone-portrait-vsmall {
-    @media only screen and (max-width: 380px) { @content; }
-  }
+$tablet: 1024px;
+$tablet-portrait: 820px;
+$phone: 736px;
+$phone-portrait: 414px;
+$phone-small: 667px;
+$phone-small-portrait: 400px;
+$phone-xsmall: 568px;
+$phone-xsmall-portrait: 320px;
+
+@mixin tablet {
+  @media only screen and (max-width: #{$tablet}) { @content; }
+}
+@mixin tablet-portrait {
+  @media only screen and (max-width: #{$tablet-portrait}) { @content; }
+}
+@mixin phone {
+  @media only screen and (max-width: #{$phone}) { @content; }
+}
+@mixin phone-portrait {
+  @media only screen and (max-width: #{$phone-portrait}) { @content; }
+}
+@mixin phone-small {
+  @media only screen and (max-width: #{$phone-small}) { @content; }
+}
+@mixin phone-small-portrait {
+  @media only screen and (max-width: #{$phone-small-portrait}) { @content; }
+}
+@mixin phone-xsmall {
+  @media only screen and (max-width: #{$phone-xsmall}) { @content; }
+}
+@mixin phone-xsmall-portrait {
+  @media only screen and (max-width: #{$phone-xsmall-portrait}) { @content; }
 }
