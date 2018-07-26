@@ -26,9 +26,10 @@
 .post-col-8,
 .post-col-9,
 .post-col-10,
-.post-col-11 {
-  float: left;
-  @include phone {
+.post-col-11,
+.post-col-inline-5 { 
+  float: left; 
+  @include phone { 
     width: 100%;
   }
 }
@@ -44,8 +45,14 @@
   padding-left: 0;
   padding-right: 0;
 }
-.post-bottom {
-  margin-bottom: 30px;
+.post-col-inline-5 {
+  width: 20%;
+}
+.center-div {
+  margin: 0 auto;
+}
+.post-bottom { 
+  margin-bottom: 30px; 
 }
 .post-bottom-2em {
   margin-bottom: 2em;
@@ -76,4 +83,16 @@
 }
 .post-top-6em {
   margin-top: 6em;
+}
+.width-90p {
+  width: 90%;
+}
+.width-80p {
+  width: 80%;
+}
+.width-70p {
+  width: 70%;
+}
+.width-60p {
+  width: 60%;
 }
