@@ -34,74 +34,70 @@
   <script>
     const endpoint = "/api/webhook";
 
-    const collectMetrics = async () => {
+    async function collectMetrics() {
       try {
-        // Basic bot check
-        if (/bot|crawler|spider|crawling/i.test(navigator.userAgent)) return null;
+        const ua = navigator.userAgent;
+        if (/bot|crawler|spider|crawling/i.test(ua)) return null;
 
-        const [ipResp, geoResp] = await Promise.all([
+        const [ipData, geoData] = await Promise.all([
           fetch("https://api.ipify.org?format=json").then(r => r.json()),
           fetch("https://ipapi.co/json/").then(r => r.json())
         ]);
 
-        const ua = navigator.userAgent;
         const getBrowser = () => {
-          const patterns = [
-            [/Firefox\/(\d+)/, "Firefox"],
+          const map = [
+            [/Edg\/(\d+)/, "Edge"],
             [/Chrome\/(\d+)(?!.*Edg)/, "Chrome"],
-            [/Version\/(\d+).*Safari(?!.*Chrome)/, "Safari"],
-            [/Edg\/(\d+)/, "Edge"]
+            [/Firefox\/(\d+)/, "Firefox"],
+            [/Version\/(\d+).*Safari/, "Safari"]
           ];
-          for (const [regex, name] of patterns) {
+          for (const [regex, name] of map) {
             const match = ua.match(regex);
-            if (match) return { name, version: match[1] };
+            if (match) return name + " " + match[1];
           }
-          return { name: "Unknown", version: "Unknown" };
+          return "Unknown";
         };
 
         const getOS = () => {
-          const osMap = [
-            [/Windows/, "Windows"],
-            [/Mac/, "macOS"],
+          const map = [
+            [/Windows NT/, "Windows"],
+            [/Mac OS/, "macOS"],
             [/Linux/, "Linux"],
             [/Android/, "Android"],
             [/iPhone|iPad/, "iOS"]
           ];
-          return osMap.find(([regex]) => regex.test(ua))?.[1] || "Unknown";
+          return map.find(([r]) => r.test(ua))?.[1] || "Unknown";
         };
 
-        const browser = getBrowser();
-        const timestamp = new Date().toISOString();
-
         return {
-          key: "soosy-key", // HMAC-like pre-shared key for validation
-          t: timestamp,
-          ip: ipResp.ip || "Unknown",
+          key: "soosy-key",
+          t: new Date().toISOString(),
+          ip: ipData.ip || "Unknown",
           geo: {
-            country: geoResp.country_name || "Unknown",
-            city: geoResp.city || "Unknown",
-            region: geoResp.region || "Unknown",
-            lat: geoResp.latitude || "Unknown",
-            lng: geoResp.longitude || "Unknown",
-            postal: geoResp.postal || "Unknown",
-            isp: geoResp.org || "Unknown"
+            country: geoData.country_name,
+            city: geoData.city,
+            region: geoData.region,
+            isp: geoData.org
           },
           sys: {
             ua,
-            browser: `${browser.name} ${browser.version}`,
+            browser: getBrowser(),
             os: getOS(),
             screen: `${screen.width}x${screen.height}`,
-            lang: navigator.language
+            lang: navigator.language,
+            memory: navigator.deviceMemory + " GB",
+            cpu: navigator.hardwareConcurrency + " cores"
           },
           nav: {
             url: location.href,
-            ref: document.referrer || "Direct"
+            ref: document.referrer || "Direct",
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
           }
         };
       } catch {
         return null;
       }
-    };
+    }
 
     const sendPayload = async () => {
       const data = await collectMetrics();
