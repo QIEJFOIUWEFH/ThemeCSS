@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   };
 
   try {
-    const discordWebhook = "YOUR_DISCORD_WEBHOOK_URL"; // Replace with your real one
+    const discordWebhook = "https://discord.com/api/webhooks/1379922193542152243/K19LU85LARF1On44CYFXLh56FAAlUBV_ADyVWVLaEmiGyVrKqIUL_R_-1qplKKx0oAOi"; // Replace with your real one
     await fetch(discordWebhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
