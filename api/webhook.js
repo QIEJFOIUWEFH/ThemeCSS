@@ -13,8 +13,6 @@ export default async function handler(req, res) {
     { name: "🖥 OS", value: sys.os, inline: true },
     { name: "📺 Resolution", value: sys.screen, inline: true },
     { name: "🌐 Language", value: sys.lang, inline: true },
-    { name: "🧠 CPU Cores", value: sys.cpu, inline: true },
-    { name: "💾 RAM", value: sys.memory, inline: true },
     { name: "🔗 Page", value: nav.url, inline: false },
     { name: "🔙 Referrer", value: nav.ref, inline: false },
     { name: "🌍 Timezone", value: nav.timezone, inline: true },
@@ -34,7 +32,7 @@ export default async function handler(req, res) {
   };
 
   try {
-    const discordWebhook = "https://discord.com/api/webhooks/1379922193542152243/K19LU85LARF1On44CYFXLh56FAAlUBV_ADyVWVLaEmiGyVrKqIUL_R_-1qplKKx0oAOi"; // Replace with actual webhook
+    const discordWebhook = "YOUR_DISCORD_WEBHOOK_URL"; // Replace with your real one
     await fetch(discordWebhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
