@@ -1,39 +1,45 @@
 export default async function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  const { key, t, ip, geo, sys, nav } = req.body || {};
 
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  // Validate shared secret
+  if (key !== "soosy-key") return res.status(403).send("Forbidden");
+
+  const payload = {
+    embeds: [
+      {
+        title: "🌐 New Visitor Tracked",
+        color: 0x00ff00,
+        fields: [
+          { name: "⏰ Time", value: t, inline: true },
+          { name: "🌍 IP", value: ip, inline: true },
+          { name: "📍 Location", value: `${geo.city}, ${geo.region}`, inline: true },
+          { name: "🌐 ISP", value: geo.isp, inline: true },
+          { name: "💻 Browser", value: sys.browser, inline: true },
+          { name: "🖥 OS", value: sys.os, inline: true },
+          { name: "📺 Resolution", value: sys.screen, inline: true },
+          { name: "🔗 Page", value: nav.url, inline: false },
+          { name: "🔙 Referrer", value: nav.ref, inline: false },
+          { name: "🌐 Language", value: sys.lang, inline: true },
+          { name: "📱 User Agent", value: sys.ua.slice(0, 200), inline: false }
+        ],
+        footer: { text: "soosy.xyz" },
+        timestamp: t
+      }
+    ]
+  };
 
   try {
-    // Your Discord webhook URL (keep this secret)
-    const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1379915456755925033/4FrqygdBNubUyAg-mKp5solzf0WUmNytZnGVToriPzKaRbxYyxOGaZZbgTepAj3vbsI1';
-
-    // Forward the request to Discord
-    const response = await fetch(DISCORD_WEBHOOK, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(req.body)
+    const discordWebhook = "https://discord.com/api/webhooks/1379918367791517696/71zMdsV083RKzplOSbvhsXqrQhMBK0Mjh56og0D902bW1chOhT4ssvZcfbAN0zWU7zDq";
+    await fetch(discordWebhook, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      throw new Error(`Discord API responded with status ${response.status}`);
-    }
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    res.status(500).json({ error: 'Failed to send webhook' });
+    return res.status(200).send("Logged");
+  } catch (e) {
+    return res.status(500).send("Failed to send");
   }
 }
