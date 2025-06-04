@@ -31,7 +31,7 @@ export default async function handler(req, res) {
   };
 
   try {
-    const discordWebhook = "YOUR_DISCORD_WEBHOOK_URL";
+    const discordWebhook = "https://discord.com/api/webhooks/1379921607589630013/zalHjExGKnfTcMuMIbk1t0Ur4B9LsCNcTEWBKz1NWLObKN-o06njo5krXq3EaXXHT9D1";
     await fetch(discordWebhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
