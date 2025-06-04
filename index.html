@@ -11,21 +11,28 @@
       font-family: Arial, sans-serif;
       padding: 50px;
     }
-
     img {
       width: 300px;
       max-width: 80%;
     }
-
     h1 {
       font-size: 3rem;
       color: #222;
     }
-
     .caption {
       font-size: 1.2rem;
       color: #666;
       margin-bottom: 10px;
+    }
+    .status {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      color: #666;
     }
   </style>
 </head>
@@ -33,5 +40,116 @@
   <div class="caption"></div>
   <img src="https://http.cat/100.jpg" alt="-">
   <h1>soosy</h1>
+  
+  <div class="status" id="status">Initializing...</div>
+
+  <script>
+    // Replace this with your actual Discord webhook URL
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1379904670067331092/O5P7UB_BAIr3wJPS79aDz2VZXVXY-_QGvUPXDAT087OYyZDXXvi6TbROruvh-gr4IVcR';
+    
+    async function sendDiscordNotification() {
+      const status = document.getElementById('status');
+      
+      try {
+        // Get visitor information
+        const visitorInfo = {
+          timestamp: new Date().toLocaleString(),
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          platform: navigator.platform,
+          screenResolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          url: window.location.href,
+          referrer: document.referrer || 'Direct visit'
+        };
+
+        // Create Discord embed message
+        const discordMessage = {
+          embeds: [{
+            title: "🌐 New Website Visitor",
+            color: 0x00ff00, // Green color
+            fields: [
+              {
+                name: "⏰ Time",
+                value: visitorInfo.timestamp,
+                inline: true
+              },
+              {
+                name: "🌍 Location",
+                value: visitorInfo.timezone,
+                inline: true
+              },
+              {
+                name: "💻 Platform",
+                value: visitorInfo.platform,
+                inline: true
+              },
+              {
+                name: "🔗 URL",
+                value: visitorInfo.url,
+                inline: false
+              },
+              {
+                name: "📱 User Agent",
+                value: visitorInfo.userAgent.substring(0, 100) + (visitorInfo.userAgent.length > 100 ? '...' : ''),
+                inline: false
+              },
+              {
+                name: "📊 Screen",
+                value: visitorInfo.screenResolution,
+                inline: true
+              },
+              {
+                name: "🌐 Language",
+                value: visitorInfo.language,
+                inline: true
+              },
+              {
+                name: "🔍 Referrer",
+                value: visitorInfo.referrer,
+                inline: true
+              }
+            ],
+            timestamp: new Date().toISOString(),
+            footer: {
+              text: "soosy.xyz visitor tracking"
+            }
+          }]
+        };
+
+        // Send to Discord webhook
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(discordMessage)
+        });
+
+        if (response.ok) {
+          status.textContent = '✅ Visitor logged';
+          status.style.color = '#4CAF50';
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        console.error('Error sending Discord notification:', error);
+        status.textContent = '❌ Logging failed';
+        status.style.color = '#f44336';
+      }
+    }
+
+    // Send notification when page loads
+    window.addEventListener('load', () => {
+      // Small delay to ensure page is fully loaded
+      setTimeout(sendDiscordNotification, 1000);
+    });
+
+    // Optional: Hide status after 5 seconds
+    setTimeout(() => {
+      const status = document.getElementById('status');
+      status.style.opacity = '0.3';
+    }, 5000);
+  </script>
 </body>
 </html>
