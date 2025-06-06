@@ -2,131 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>soosy.xyz - HTTP Cats</title>
-  <link rel="icon" href="https://http.cat/404.jpg" type="image/jpeg" />
+  <title>Soosy Cat Machine</title>
+  <link rel="icon" href="https://http.cat/404.jpg" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
     body {
       margin: 0;
+      font-family: sans-serif;
       background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      color: #eee;
-      font-family: 'Montserrat', sans-serif;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       overflow: hidden;
-      padding: 20px;
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 2.5rem;
       margin-bottom: 0.5rem;
     }
 
     .caption {
-      font-size: 1.2rem;
-      color: #bbb;
-      margin-bottom: 15px;
+      color: #aaa;
+      margin-bottom: 10px;
     }
 
     #catImg {
       width: 300px;
       max-width: 90vw;
-      border-radius: 16px;
-      box-shadow: 0 0 20px #ff8c00aa;
-      cursor: pointer;
-      transition: filter 0.3s ease;
-      backface-visibility: hidden;
-      user-select: none;
+      border-radius: 12px;
+      transition: transform 1s ease;
     }
 
-    #catImg.spin {
-      animation: spinCase 7s ease-in-out forwards;
-      filter: blur(0);
+    .spin {
+      animation: spin 7s ease-in-out;
     }
 
-    @keyframes spinCase {
-      0% { transform: scale(1) rotateY(0deg); filter: blur(2px);}
-      50% { transform: scale(1.1) rotateY(900deg); filter: blur(8px);}
-      100% { transform: scale(1) rotateY(1800deg); filter: blur(0);}
+    @keyframes spin {
+      0% { transform: rotateY(0); filter: blur(2px); }
+      50% { transform: rotateY(900deg); filter: blur(8px); }
+      100% { transform: rotateY(1800deg); filter: blur(0); }
     }
 
-    #rerollBtn {
-      margin-top: 20px;
+    button {
       background: linear-gradient(45deg, #ff6a00, #ee0979);
       border: none;
       padding: 12px 30px;
-      font-size: 1.2rem;
-      border-radius: 30px;
+      font-size: 1rem;
+      margin-top: 20px;
+      border-radius: 25px;
       color: white;
       cursor: pointer;
-      box-shadow: 0 5px 15px #ee0979cc;
-      transition: background 0.3s ease;
-    }
-
-    #rerollBtn:hover {
-      background: linear-gradient(45deg, #ee0979, #ff6a00);
     }
 
     #rarityText {
-      margin-top: 12px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #ffa500cc;
-      text-shadow: 0 0 8px #ffa500aa;
-      min-height: 1.4rem;
+      margin-top: 10px;
+      color: #ffcc00;
     }
 
     #inventory {
       margin-top: 30px;
-      background: #222b40cc;
-      border-radius: 16px;
-      padding: 15px 25px;
-      box-shadow: 0 0 30px #ee0979aa;
-      font-size: 1rem;
-      color: #ddd;
+      background: rgba(0,0,0,0.3);
+      padding: 15px;
+      border-radius: 10px;
       max-width: 90vw;
-      width: 400px;
-    }
-
-    #inventory h2 {
-      margin: 0 0 10px 0;
-      font-weight: 700;
-      color: #ff6a00;
     }
 
     #inventory ul {
       list-style: none;
       padding: 0;
       margin: 0;
-      max-height: 150px;
-      overflow-y: auto;
     }
 
-    #inventory ul li {
-      padding: 4px 0;
-      border-bottom: 1px solid #333;
+    #inventory li {
+      margin: 4px 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="caption">Click the cat or the button to reroll!</div>
-  <img id="catImg" src="" alt="HTTP Cat" />
+  <div class="caption">Click the image or press reroll 🎲</div>
+  <img id="catImg" src="" alt="cat" />
   <div id="rarityText"></div>
-  <button id="rerollBtn">🎲 Reroll Cat</button>
+  <button id="rerollBtn">Reroll</button>
 
   <div id="inventory">
-    <h2>Cat Inventory</h2>
+    <h2>Inventory</h2>
     <ul id="inventoryList"></ul>
   </div>
 
-  <!-- Audio -->
-  <audio id="csgoSound" src="https://cdn.jsdelivr.net/gh/QIEJFOIUWEFH/soosycdn/csgo-case.mp3" preload="auto"></audio>
+  <audio id="csgoSound" src="https://cdn.jsdelivr.net/gh/QIEJFOIUWEFH/soosycdn@main/csgo-case.mp3" preload="auto"></audio>
 
   <script>
     const cats = [
@@ -147,78 +113,67 @@
       { code: 500, rarity: "Mythic" }
     ];
 
-    const catImg = document.getElementById('catImg');
-    const rarityText = document.getElementById('rarityText');
-    const rerollBtn = document.getElementById('rerollBtn');
-    const csgoSound = document.getElementById('csgoSound');
-    const inventoryList = document.getElementById('inventoryList');
+    function getRandomCat() {
+      return cats[Math.floor(Math.random() * cats.length)];
+    }
 
-    let inventory = JSON.parse(localStorage.getItem('catInventory')) || {};
-    let currentCat = JSON.parse(localStorage.getItem('selectedCat')) || getRandomCat();
+    const catImg = document.getElementById("catImg");
+    const rarityText = document.getElementById("rarityText");
+    const rerollBtn = document.getElementById("rerollBtn");
+    const csgoSound = document.getElementById("csgoSound");
+    const inventoryList = document.getElementById("inventoryList");
 
-    function updateInventory(catCode) {
-      inventory[catCode] = (inventory[catCode] || 0) + 1;
-      localStorage.setItem('catInventory', JSON.stringify(inventory));
+    let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+    let currentCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
+
+    function showCat(cat) {
+      const img = new Image();
+      img.onload = () => {
+        catImg.src = `https://http.cat/${cat.code}.jpg`;
+        rarityText.textContent = `Rarity: ${cat.rarity}`;
+        updateInventory(cat.code);
+      };
+      img.onerror = () => {
+        catImg.src = "https://http.cat/404.jpg";
+        rarityText.textContent = "Image not found.";
+      };
+      img.src = `https://http.cat/${cat.code}.jpg`;
+    }
+
+    function updateInventory(code) {
+      inventory[code] = (inventory[code] || 0) + 1;
+      localStorage.setItem("inventory", JSON.stringify(inventory));
+      renderInventory();
     }
 
     function renderInventory() {
-      inventoryList.innerHTML = '';
-      const sortedCodes = Object.keys(inventory).sort((a, b) => a - b);
-      for (const code of sortedCodes) {
-        const cat = cats.find(c => c.code == code);
-        const count = inventory[code];
-        if (!cat) continue;
-        const li = document.createElement('li');
-        li.textContent = `HTTP ${code} - ${cat.rarity} — Collected: ${count}`;
+      inventoryList.innerHTML = "";
+      Object.keys(inventory).sort((a, b) => a - b).forEach(code => {
+        const rarity = cats.find(c => c.code == code)?.rarity || "Unknown";
+        const li = document.createElement("li");
+        li.textContent = `HTTP ${code} — ${rarity} — x${inventory[code]}`;
         inventoryList.appendChild(li);
-      }
-    }
-
-    function showCat(cat) {
-      catImg.src = `https://http.cat/${cat.code}.jpg`;
-      catImg.alt = `HTTP Cat ${cat.code}`;
-      rarityText.textContent = `Rarity: ${cat.rarity}`;
-    }
-
-    catImg.onerror = () => {
-      console.error('Failed to load cat image:', catImg.src);
-      rarityText.textContent = "Failed to load cat image :(";
-      catImg.src = "https://http.cat/404.jpg";
-    };
-
-    function getRandomCat() {
-      let newCat;
-      do {
-        newCat = cats[Math.floor(Math.random() * cats.length)];
-      } while (currentCat && newCat.code === currentCat.code);
-      return newCat;
-    }
-
-    function rerollCat() {
-      const newCat = getRandomCat();
-      catImg.classList.add('spin');
-
-      csgoSound.currentTime = 0;
-      csgoSound.play().catch(() => {
-        console.warn("Sound blocked by browser; click page first.");
       });
-
-      setTimeout(() => {
-        currentCat = newCat;
-        showCat(currentCat);
-        updateInventory(currentCat.code);
-        localStorage.setItem('selectedCat', JSON.stringify(currentCat));
-        catImg.classList.remove('spin');
-        renderInventory();
-      }, 7000);
     }
 
-    showCat(currentCat);
-    updateInventory(currentCat.code);
-    renderInventory();
+    function reroll() {
+      const newCat = getRandomCat();
+      catImg.classList.add("spin");
+      csgoSound.currentTime = 0;
+      csgoSound.play().catch(() => {});
+      setTimeout(() => {
+        showCat(newCat);
+        localStorage.setItem("lastCat", JSON.stringify(newCat));
+        catImg.classList.remove("spin");
+      }, 7000); // matches audio duration
+    }
 
-    catImg.addEventListener('click', rerollCat);
-    rerollBtn.addEventListener('click', rerollCat);
+    rerollBtn.addEventListener("click", reroll);
+    catImg.addEventListener("click", reroll);
+
+    // initial load
+    showCat(currentCat);
+    renderInventory();
   </script>
 </body>
 </html>
