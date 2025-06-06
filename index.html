@@ -20,47 +20,14 @@
       border-radius: 12px;
       box-shadow: 0 0 20px gray;
       cursor: pointer;
-      backface-visibility: hidden;
-      transform-style: preserve-3d;
       transition: box-shadow 0.3s ease;
-    }
-
-    .flip-container {
-      perspective: 800px;
-      width: 280px;
-      max-width: 90vw;
-      height: 280px;
-      margin: 0 auto;
       position: relative;
-    }
-    .flipper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 3.5s cubic-bezier(0.4, 0, 0.2, 1);
-      transform-style: preserve-3d;
-    }
-    .flipped {
-      transform: rotateY(180deg);
-    }
-    .front, .back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 12px;
-      box-shadow: 0 0 20px gray;
-    }
-    .front {
-      background: #111;
-    }
-    .back {
-      transform: rotateY(180deg);
-      background: #111;
+      left: 0;
     }
 
     #rarityText {
       margin-top: 8px; font-weight: bold; font-size: 1.1rem;
+      min-height: 1.4em;
     }
     button {
       margin-top: 20px; padding: 10px 25px;
@@ -105,14 +72,9 @@
 </head>
 <body>
 
-  <h1>Soosy Cat Machine</h1>
+  <h1>soosy.xyz cat gambler $$</h1>
   
-  <div class="flip-container" aria-label="HTTP cat image">
-    <div id="flipper" class="flipper">
-      <img id="frontImg" class="front" src="" alt="HTTP cat front" />
-      <img id="backImg" class="back" src="" alt="HTTP cat back" />
-    </div>
-  </div>
+  <img id="catImg" src="" alt="HTTP cat" aria-label="HTTP cat image" />
   
   <div id="rarityText"></div>
   <button id="rerollBtn">Reroll 🎲</button>
@@ -161,9 +123,7 @@
       "Mythic": "1%"
     };
 
-    const flipper = document.getElementById("flipper");
-    const frontImg = document.getElementById("frontImg");
-    const backImg = document.getElementById("backImg");
+    const catImg = document.getElementById("catImg");
     const rarityText = document.getElementById("rarityText");
     const rerollBtn = document.getElementById("rerollBtn");
     const inventoryList = document.getElementById("inventoryList");
@@ -171,7 +131,7 @@
 
     let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
     let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
-    let flipping = false;
+    let animating = false;
 
     function getRandomCat() {
       const pool = [];
@@ -211,16 +171,10 @@
     }
 
     function showCat(cat) {
-      frontImg.src = `https://http.cat/${cat.code}.jpg`;
-      backImg.src = `https://http.cat/${cat.code}.jpg`;
+      catImg.src = `https://http.cat/${cat.code}.jpg`;
       rarityText.textContent = `Rarity: ${cat.rarity} - ${rarityChances[cat.rarity] || "?"}`;
-      // Glow effect on front and back
-      Object.values(rarityClasses).forEach(cls => {
-        frontImg.classList.remove(cls);
-        backImg.classList.remove(cls);
-      });
-      frontImg.classList.add(rarityClasses[cat.rarity]);
-      backImg.classList.add(rarityClasses[cat.rarity]);
+      Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+      catImg.classList.add(rarityClasses[cat.rarity]);
       saveInventory(cat.code);
       localStorage.setItem("lastCat", JSON.stringify(cat));
       lastCat = cat;
@@ -235,35 +189,45 @@
       }
     }
 
-    function reroll() {
-      if (flipping) return; // prevent multiple clicks
-      flipping = true;
+    async function reroll() {
+      if (animating) return;
+      animating = true;
       playMusic();
+
+      let shuffleCount = 15;  // total shuffle steps
+      let currentStep = 0;
+      const maxOffset = 40; // px horizontal movement max
       
-      // shuffle images behind flip effect
-      let shuffleCount = 0;
-      const maxShuffles = 20;
-      const shuffleIntervalMs = 150;
-      
-      let shuffleInterval = setInterval(() => {
-        const tempCat = getRandomCat();
-        backImg.src = `https://http.cat/${tempCat.code}.jpg`;
-        // Show glow on back
-        Object.values(rarityClasses).forEach(cls => backImg.classList.remove(cls));
-        backImg.classList.add(rarityClasses[tempCat.rarity]);
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      while (currentStep < shuffleCount) {
+        // Slide left or right alternating
+        const direction = currentStep % 2 === 0 ? maxOffset : -maxOffset;
+        catImg.style.transition = 'left 0.12s ease-in-out';
+        catImg.style.left = direction + "px";
+
+        // Change cat image
+        const randomCat = getRandomCat();
+        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
         rarityText.textContent = "Shuffling...";
-        shuffleCount++;
-        if (shuffleCount >= maxShuffles) {
-          clearInterval(shuffleInterval);
-          // Flip animation
-          flipper.classList.add("flipped");
-          setTimeout(() => {
-            flipper.classList.remove("flipped");
-            showCat(lastCat = getRandomCat());
-            flipping = false;
-          }, 3500); // match animation duration
-        }
-      }, shuffleIntervalMs);
+        Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+        catImg.classList.add(rarityClasses[randomCat.rarity]);
+
+        await sleep(120);
+
+        currentStep++;
+      }
+
+      // Slide back to center
+      catImg.style.left = "0px";
+
+      // Show final cat
+      const finalCat = getRandomCat();
+      showCat(finalCat);
+
+      animating = false;
     }
 
     rerollBtn.onclick = reroll;
@@ -271,10 +235,6 @@
     // On page load, show last cat & render inventory
     showCat(lastCat);
     renderInventory();
-
-    // Optional: play music on first click or autoplay on load with muted autoplay restrictions in mind
-    // bgm.play().catch(() => {});
-
   </script>
 
 </body>
