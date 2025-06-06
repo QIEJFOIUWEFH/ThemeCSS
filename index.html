@@ -115,17 +115,29 @@
   </div>
   <div id="rarityText"></div>
   <button id="rerollBtn">Reroll 🎲</button>
-  <button onclick="document.getElementById('bg-music').play()">🔊 Play Music</button>
 
   <div id="inventory">
     <h2>Inventory</h2>
     <ul id="inventoryList"></ul>
   </div>
 
-  <!-- 🔊 Background Music -->
+  <!-- 🎵 Background Music -->
   <audio id="bg-music" src="https://raw.githubusercontent.com/QIEJFOIUWEFH/soosycdn/main/cats-soosy.mp3" autoplay loop></audio>
 
   <script>
+    // Attempt to play music after user interaction if blocked
+    document.addEventListener("DOMContentLoaded", () => {
+      const audio = document.getElementById("bg-music");
+      const tryPlay = () => {
+        audio.volume = 0.5;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      };
+      document.body.addEventListener("click", tryPlay, { once: true });
+    });
+
     const cats = [
       { code: 200, rarity: "Common" },
       { code: 201, rarity: "Common" },
