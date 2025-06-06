@@ -69,7 +69,7 @@
   <div class="stars"></div>
   <div class="container">
     <img id="catImg" src="" alt="http.cat" />
-    <h1>soosy - gamble cats</h1>
+    <h1>soosy.xyz - gamble cats</h1>
     <div class="caption" id="caption"></div>
     <div class="rarity" id="rarityLabel"></div>
   </div>
@@ -77,27 +77,58 @@
   <script>
     const httpCats = [
       { code: 100, rarity: "Common" },
+      { code: 101, rarity: "Common" },
       { code: 200, rarity: "Common" },
       { code: 201, rarity: "Common" },
+      { code: 202, rarity: "Rare" },
       { code: 204, rarity: "Rare" },
-      { code: 301, rarity: "Rare" },
+      { code: 206, rarity: "Rare" },
+      { code: 301, rarity: "Common" },
+      { code: 302, rarity: "Common" },
+      { code: 304, rarity: "Rare" },
+      { code: 400, rarity: "Rare" },
+      { code: 401, rarity: "Rare" },
+      { code: 403, rarity: "Rare" },
       { code: 404, rarity: "Legendary" },
+      { code: 405, rarity: "Rare" },
+      { code: 408, rarity: "Rare" },
       { code: 418, rarity: "Legendary" },
+      { code: 420, rarity: "Legendary" },
       { code: 429, rarity: "Rare" },
       { code: 500, rarity: "Common" },
-      { code: 503, rarity: "Rare" }
+      { code: 502, rarity: "Common" },
+      { code: 503, rarity: "Rare" },
+      { code: 504, rarity: "Rare" },
+      { code: 511, rarity: "Legendary" }
     ];
 
-    function getRandomCat() {
-      const random = httpCats[Math.floor(Math.random() * httpCats.length)];
-      document.getElementById("catImg").src = `https://http.cat/${random.code}.jpg`;
-      document.getElementById("caption").textContent = `HTTP ${random.code}`;
+    function showCat(cat) {
+      document.getElementById("catImg").src = `https://http.cat/${cat.code}.jpg`;
+      document.getElementById("caption").textContent = `HTTP ${cat.code}`;
       const rarityLabel = document.getElementById("rarityLabel");
-      rarityLabel.textContent = `${random.rarity} 🐾`;
-      rarityLabel.className = `rarity ${random.rarity.toLowerCase()}`;
+      rarityLabel.textContent = `${cat.rarity} 🐾`;
+      rarityLabel.className = `rarity ${cat.rarity.toLowerCase()}`;
     }
 
-    window.onload = getRandomCat;
+    function getRandomCat() {
+      return httpCats[Math.floor(Math.random() * httpCats.length)];
+    }
+
+    function initCat() {
+      const saved = localStorage.getItem("soosy_httpcat");
+      let cat;
+
+      try {
+        cat = saved ? JSON.parse(saved) : getRandomCat();
+      } catch {
+        cat = getRandomCat();
+      }
+
+      showCat(cat);
+      localStorage.setItem("soosy_httpcat", JSON.stringify(cat));
+    }
+
+    window.onload = initCat;
   </script>
 </body>
 </html>
