@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>soosy - gamble cats.</title>
+  <title>Soosy Cat Machine</title>
   <link rel="icon" href="https://http.cat/404.jpg" />
   <style>
     body {
@@ -32,11 +32,11 @@
       width: 300px;
       max-width: 90vw;
       border-radius: 12px;
-      transition: transform 0.3s ease;
+      transition: transform 0.5s ease;
     }
 
     .flip {
-      animation: flip 0.2s linear;
+      animation: flip 0.4s linear;
     }
 
     @keyframes flip {
@@ -93,8 +93,8 @@
   </div>
 
   <!-- Background Music -->
-  <audio id="bgm" autoplay loop>
-    <source src="https://raw.githubusercontent.com/QIEJFOIUWEFH/soosycdn/main/cats-soosy.mp3" type="audio/mpeg">
+  <audio id="bgm" loop>
+    <source src="https://soosycdn.pages.dev/audio/cats-soosy.mp3" type="audio/mpeg">
   </audio>
 
   <script>
@@ -121,7 +121,6 @@
 
       cats.forEach(cat => {
         let weight = 1;
-
         switch (cat.rarity) {
           case "Common": weight = 60; break;
           case "Uncommon": weight = 20; break;
@@ -130,7 +129,6 @@
           case "Legendary": weight = 3; break;
           case "Mythic": weight = 1; break;
         }
-
         for (let i = 0; i < weight; i++) {
           pool.push(cat);
         }
@@ -143,6 +141,7 @@
     const rarityText = document.getElementById("rarityText");
     const rerollBtn = document.getElementById("rerollBtn");
     const inventoryList = document.getElementById("inventoryList");
+    const bgm = document.getElementById("bgm");
 
     let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
     let currentCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
@@ -170,7 +169,9 @@
     }
 
     function reroll() {
-      const flipCount = 20;
+      try { bgm.play(); } catch {}
+
+      const flipCount = 25;
       let flips = 0;
 
       const flipInterval = setInterval(() => {
@@ -191,7 +192,7 @@
             localStorage.setItem("lastCat", JSON.stringify(currentCat));
           }, 200);
         }
-      }, 150);
+      }, 280); // slower for shuffle feel
     }
 
     rerollBtn.addEventListener("click", reroll);
