@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
   const { key, t, ip, geo, sys, nav } = req.body || {};
-  if (key !== "soosy-key") return res.status(403).send("Forbidden");
+  if (key !== "fjZ87cnqr-key") return res.status(403).send("Forbidden");
 
   const fields = [
     { name: "⏰ Time", value: t, inline: true },
