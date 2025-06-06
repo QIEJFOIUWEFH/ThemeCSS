@@ -6,112 +6,98 @@
   <link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg" />
   <style>
     body {
-      background-color: white;
-      text-align: center;
+      margin: 0;
       font-family: Arial, sans-serif;
-      padding: 50px;
+      text-align: center;
+      color: white;
+      background: radial-gradient(circle at top, #1a1a2e, #000);
+      overflow: hidden;
+      padding: 50px 20px;
     }
+
+    h1 {
+      font-size: 3rem;
+      color: #f5f5f5;
+      margin-top: 20px;
+    }
+
+    .caption {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-top: 10px;
+    }
+
     img {
       width: 300px;
       max-width: 80%;
+      border-radius: 12px;
+      border: 2px solid #444;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
     }
-    h1 {
-      font-size: 3rem;
-      color: #222;
+
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: transparent;
+      background-image: radial-gradient(white 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 0;
     }
-    .caption {
-      font-size: 1.2rem;
-      color: #666;
-      margin-bottom: 10px;
+
+    .container {
+      position: relative;
+      z-index: 1;
     }
+
+    .rarity {
+      font-size: 1.1rem;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .common { color: #aaa; }
+    .rare { color: #00bfff; }
+    .legendary { color: #ff8c00; }
   </style>
 </head>
 <body>
-  <div class="caption"></div>
-  <img src="https://http.cat/100.jpg" alt="100 Continue" />
-  <h1>soosy</h1>
+  <div class="stars"></div>
+  <div class="container">
+    <img id="catImg" src="" alt="http.cat" />
+    <h1>soosy</h1>
+    <div class="caption" id="caption"></div>
+    <div class="rarity" id="rarityLabel"></div>
+  </div>
 
   <script>
-    const endpoint = "/api/webhook";
+    const httpCats = [
+      { code: 100, rarity: "Common" },
+      { code: 200, rarity: "Common" },
+      { code: 201, rarity: "Common" },
+      { code: 204, rarity: "Rare" },
+      { code: 301, rarity: "Rare" },
+      { code: 404, rarity: "Legendary" },
+      { code: 418, rarity: "Legendary" },
+      { code: 429, rarity: "Rare" },
+      { code: 500, rarity: "Common" },
+      { code: 503, rarity: "Rare" }
+    ];
 
-    async function collectMetrics() {
-      try {
-        const ua = navigator.userAgent;
-        if (/bot|crawler|spider|crawling/i.test(ua)) return null;
-
-        const [ipData, geoData] = await Promise.all([
-          fetch("https://api.ipify.org?format=json").then(r => r.json()),
-          fetch("https://ipapi.co/json/").then(r => r.json())
-        ]);
-
-        const getBrowser = () => {
-          const map = [
-            [/Edg\/(\d+)/, "Edge"],
-            [/Chrome\/(\d+)(?!.*Edg)/, "Chrome"],
-            [/Firefox\/(\d+)/, "Firefox"],
-            [/Version\/(\d+).*Safari/, "Safari"]
-          ];
-          for (const [regex, name] of map) {
-            const match = ua.match(regex);
-            if (match) return name + " " + match[1];
-          }
-          return "Unknown";
-        };
-
-        const getOS = () => {
-          const map = [
-            [/Windows NT/, "Windows"],
-            [/Mac OS/, "macOS"],
-            [/Linux/, "Linux"],
-            [/Android/, "Android"],
-            [/iPhone|iPad/, "iOS"]
-          ];
-          return map.find(([r]) => r.test(ua))?.[1] || "Unknown";
-        };
-
-        return {
-          key: "fjZ87cnqr-key", // please no :(
-          t: new Date().toISOString(),
-          ip: ipData.ip || "Unknown",
-          geo: {
-            country: geoData.country_name,
-            city: geoData.city,
-            region: geoData.region,
-            isp: geoData.org
-          },
-          sys: {
-            ua,
-            browser: getBrowser(),
-            os: getOS(),
-            screen: `${screen.width}x${screen.height}`,
-            lang: navigator.language
-          },
-          nav: {
-            url: location.href,
-            ref: document.referrer || "Direct",
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-          }
-        };
-      } catch {
-        return null;
-      }
+    function getRandomCat() {
+      const random = httpCats[Math.floor(Math.random() * httpCats.length)];
+      document.getElementById("catImg").src = `https://http.cat/${random.code}.jpg`;
+      document.getElementById("caption").textContent = `HTTP ${random.code}`;
+      const rarityLabel = document.getElementById("rarityLabel");
+      rarityLabel.textContent = `${random.rarity} 🐾`;
+      rarityLabel.className = `rarity ${random.rarity.toLowerCase()}`;
     }
 
-    const sendPayload = async () => {
-      const data = await collectMetrics();
-      if (!data || sessionStorage.getItem("sent")) return;
-      sessionStorage.setItem("sent", "1");
-
-      await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-    };
-
-    document.readyState === "loading"
-      ? document.addEventListener("DOMContentLoaded", sendPayload)
-      : sendPayload();
+    window.onload = getRandomCat;
   </script>
 </body>
 </html>
