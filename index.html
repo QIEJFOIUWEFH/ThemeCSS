@@ -20,9 +20,25 @@
       border-radius: 12px;
       box-shadow: 0 0 20px gray;
       cursor: pointer;
-      transition: box-shadow 0.3s ease;
       position: relative;
       left: 0;
+      /* We'll toggle this class to start animation */
+    }
+
+    /* CSS shuffle animation: slide left & right repeatedly then back to center */
+    @keyframes shuffle {
+      0%   { left: 0; }
+      10%  { left: -40px; }
+      25%  { left: 40px; }
+      40%  { left: -30px; }
+      55%  { left: 30px; }
+      70%  { left: -15px; }
+      85%  { left: 15px; }
+      100% { left: 0; }
+    }
+
+    .shuffling {
+      animation: shuffle 3.5s ease-in-out forwards;
     }
 
     #rarityText {
@@ -84,8 +100,6 @@
     <ul id="inventoryList"></ul>
   </div>
 
-  <audio id="bgm" loop preload="auto" src="https://raw.githubusercontent.com/QIEJFOIUWEFH/soosycdn/main/cats-soosy.mp3"></audio>
-
   <script>
     const cats = [
       { code: 200, rarity: "Common" },
@@ -127,7 +141,6 @@
     const rarityText = document.getElementById("rarityText");
     const rerollBtn = document.getElementById("rerollBtn");
     const inventoryList = document.getElementById("inventoryList");
-    const bgm = document.getElementById("bgm");
 
     let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
     let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
@@ -180,50 +193,24 @@
       lastCat = cat;
     }
 
-    function playMusic() {
-      try {
-        bgm.volume = 0.3;
-        bgm.play();
-      } catch(e) {
-        console.log("Audio play blocked; user interaction needed.");
-      }
-    }
-
     async function reroll() {
-      if (animating) return;
+      if(animating) return;
       animating = true;
-      playMusic();
 
-      let shuffleCount = 15;  // total shuffle steps
-      let currentStep = 0;
-      const maxOffset = 40; // px horizontal movement max
-      
-      function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
+      catImg.classList.add("shuffling");
 
-      while (currentStep < shuffleCount) {
-        // Slide left or right alternating
-        const direction = currentStep % 2 === 0 ? maxOffset : -maxOffset;
-        catImg.style.transition = 'left 0.12s ease-in-out';
-        catImg.style.left = direction + "px";
-
-        // Change cat image
+      let shuffleCount = 20;
+      for(let i=0; i < shuffleCount; i++) {
         const randomCat = getRandomCat();
         catImg.src = `https://http.cat/${randomCat.code}.jpg`;
         rarityText.textContent = "Shuffling...";
         Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
         catImg.classList.add(rarityClasses[randomCat.rarity]);
-
-        await sleep(120);
-
-        currentStep++;
+        await new Promise(r => setTimeout(r, 100));
       }
 
-      // Slide back to center
-      catImg.style.left = "0px";
+      catImg.classList.remove("shuffling");
 
-      // Show final cat
       const finalCat = getRandomCat();
       showCat(finalCat);
 
@@ -232,9 +219,10 @@
 
     rerollBtn.onclick = reroll;
 
-    // On page load, show last cat & render inventory
+    // Show last cat on load
     showCat(lastCat);
     renderInventory();
+
   </script>
 
 </body>
