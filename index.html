@@ -1,84 +1,86 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>soosy.xyz</title>
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
-  <!-- Google Fonts Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      margin: 0; 
+      margin: 0;
       font-family: 'Poppins', sans-serif;
       background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
       color: white;
       text-align: center;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh; overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       padding: 1rem;
     }
-    h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 600; }
-
-    #catContainer {
-      width: 280px; max-width: 90vw;
-      cursor: pointer;
-      margin: auto;
-      overflow: visible;
-      position: relative;
-      perspective: 1000px;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
     }
-
+    #catContainer {
+      width: 280px;
+      max-width: 90vw;
+      margin: auto;
+      perspective: 1000px;
+      position: relative;
+    }
     #catImg {
       width: 100%;
       border-radius: 12px;
-      box-shadow: 0 0 20px gray;
       backface-visibility: hidden;
       transform-style: preserve-3d;
       transition: box-shadow 0.3s ease;
       position: relative;
-      left: 0;
     }
-
-    /* Shuffle animation: moves left and right quickly */
     .shuffling {
       animation: shuffleAnim 3.5s ease forwards;
     }
-
     @keyframes shuffleAnim {
-      0%   { left: 0; }
-      10%  { left: -40px; }
-      20%  { left: 40px; }
-      30%  { left: -30px; }
-      40%  { left: 30px; }
-      50%  { left: -20px; }
-      60%  { left: 20px; }
-      70%  { left: -10px; }
-      80%  { left: 10px; }
-      90%  { left: 0; }
+      0% { left: 0; }
+      15% { left: -30px; }
+      30% { left: 30px; }
+      45% { left: -20px; }
+      60% { left: 20px; }
+      75% { left: -10px; }
+      90% { left: 10px; }
       100% { left: 0; }
     }
-
     #rarityText {
-      margin-top: 8px; font-weight: 600; font-size: 1.1rem;
+      margin-top: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
       min-height: 1.4em;
     }
     button {
-      margin-top: 20px; padding: 10px 25px;
-      border-radius: 20px; border: none;
+      margin-top: 20px;
+      padding: 10px 25px;
+      border-radius: 20px;
+      border: none;
       background: linear-gradient(45deg, #ff6a00, #ee0979);
-      color: white; font-weight: 600; font-size: 1rem;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
       cursor: pointer;
-      user-select: none;
       font-family: 'Poppins', sans-serif;
     }
     #inventory {
-      margin-top: 30px; background: rgba(255 255 255 / 0.1);
-      padding: 12px 20px; border-radius: 12px;
-      width: 100%; max-width: 400px;
+      margin-top: 30px;
+      background: rgba(255 255 255 / 0.1);
+      padding: 12px 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
       text-align: left;
       font-size: 0.9rem;
-      max-height: 200px; overflow-y: auto;
-      font-family: 'Poppins', sans-serif;
+      max-height: 200px;
+      overflow-y: auto;
     }
     #inventory h2 {
       margin: 0 0 8px;
@@ -87,7 +89,9 @@
       text-align: center;
     }
     #inventory ul {
-      list-style: none; margin: 0; padding: 0;
+      list-style: none;
+      margin: 0;
+      padding: 0;
     }
     #inventory li {
       margin-bottom: 5px;
@@ -95,31 +99,31 @@
       padding-bottom: 3px;
       color: #ddd;
     }
-
-    /* Glowing outlines by rarity */
     .glow-common    { box-shadow: 0 0 15px gray; }
     .glow-uncommon  { box-shadow: 0 0 15px #2ecc71; }
     .glow-rare      { box-shadow: 0 0 15px #3498db; }
     .glow-epic      { box-shadow: 0 0 15px #9b59b6; }
     .glow-legendary { box-shadow: 0 0 20px #e67e22; }
-    .glow-mythic    { box-shadow: 0 0 25px #f1c40f; }
+    .glow-mythic    { box-shadow: 0 0 25px #f1c40f, 0 0 40px #f39c12; }
   </style>
 </head>
 <body>
 
   <h1>soosy.xyz cat gambler $$</h1>
-  
   <div id="catContainer">
-    <img id="catImg" src="" alt="HTTP cat" aria-label="HTTP cat image" />
+    <img id="catImg" src="" alt="HTTP cat" />
   </div>
-  
   <div id="rarityText"></div>
   <button id="rerollBtn">Reroll 🎲</button>
+  <button onclick="document.getElementById('bg-music').play()">🔊 Play Music</button>
 
   <div id="inventory">
     <h2>Inventory</h2>
     <ul id="inventoryList"></ul>
   </div>
+
+  <!-- 🔊 Background Music -->
+  <audio id="bg-music" src="https://raw.githubusercontent.com/QIEJFOIUWEFH/soosycdn/main/cats-soosy.mp3" autoplay loop></audio>
 
   <script>
     const cats = [
@@ -129,13 +133,11 @@
       { code: 204, rarity: "Uncommon" },
       { code: 206, rarity: "Rare" },
       { code: 301, rarity: "Rare" },
-      { code: 302, rarity: "Rare" },
       { code: 304, rarity: "Epic" },
       { code: 400, rarity: "Epic" },
       { code: 401, rarity: "Legendary" },
       { code: 403, rarity: "Legendary" },
       { code: 404, rarity: "Mythic" },
-      { code: 405, rarity: "Mythic" },
       { code: 418, rarity: "Mythic" },
       { code: 500, rarity: "Mythic" }
     ];
@@ -150,12 +152,12 @@
     };
 
     const rarityChances = {
-      "Common": "53%",
-      "Uncommon": "26%",
-      "Rare": "11%",
-      "Epic": "6%",
-      "Legendary": "3%",
-      "Mythic": "1%"
+      "Common": "75%",
+      "Uncommon": "15%",
+      "Rare": "5%",
+      "Epic": "3%",
+      "Legendary": "1.5%",
+      "Mythic": "0.5%"
     };
 
     const catImg = document.getElementById("catImg");
@@ -172,8 +174,8 @@
       cats.forEach(cat => {
         let weight = 1;
         switch (cat.rarity) {
-          case "Common": weight = 50; break;
-          case "Uncommon": weight = 25; break;
+          case "Common": weight = 150; break;
+          case "Uncommon": weight = 30; break;
           case "Rare": weight = 10; break;
           case "Epic": weight = 6; break;
           case "Legendary": weight = 3; break;
@@ -193,7 +195,7 @@
     function renderInventory() {
       inventoryList.innerHTML = '';
       Object.keys(inventory)
-        .sort((a,b) => a-b)
+        .sort((a, b) => a - b)
         .forEach(code => {
           const cat = cats.find(c => c.code == code);
           const rarity = cat ? cat.rarity : "Unknown";
@@ -206,7 +208,7 @@
 
     function showCat(cat) {
       catImg.src = `https://http.cat/${cat.code}.jpg`;
-      rarityText.textContent = `Rarity: ${cat.rarity} - ${rarityChances[cat.rarity] || "?"}`;
+      rarityText.textContent = `Rarity: ${cat.rarity} — ${rarityChances[cat.rarity] || "?"}`;
       Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
       catImg.classList.add(rarityClasses[cat.rarity]);
       saveInventory(cat.code);
@@ -215,7 +217,7 @@
     }
 
     function reroll() {
-      if(animating) return;
+      if (animating) return;
       animating = true;
 
       catImg.classList.add("shuffling");
@@ -242,8 +244,6 @@
     // Show last cat on load
     showCat(lastCat);
     renderInventory();
-
   </script>
-
 </body>
 </html>
