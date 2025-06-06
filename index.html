@@ -155,7 +155,7 @@
     <ul id="inventoryList"></ul>
   </div>
 
-  <!-- Audio element: replace src with your actual hosted mp3 -->
+  <!-- Audio element: using jsDelivr CDN raw mp3 from GitHub -->
   <audio id="csgoSound" src="https://cdn.jsdelivr.net/gh/QIEJFOIUWEFH/soosycdn/csgo-case.mp3" preload="auto"></audio>
 
   <script>
@@ -234,17 +234,11 @@
       const newCat = getRandomCat();
       catImg.classList.add('spin');
       
-      // Play sound only if user interacted
-      if (csgoSound.paused) {
-        csgoSound.currentTime = 0;
-        csgoSound.play().catch(() => {
-          // sound play failed (autoplay blocked)
-          console.warn("Sound play was blocked; it will play after user interaction.");
-        });
-      } else {
-        csgoSound.currentTime = 0;
-        csgoSound.play();
-      }
+      // Play sound only if user interacted (autoplay restrictions)
+      csgoSound.currentTime = 0;
+      csgoSound.play().catch(() => {
+        console.warn("Sound play was blocked; please interact with the page to enable audio.");
+      });
       
       setTimeout(() => {
         currentCat = newCat;
