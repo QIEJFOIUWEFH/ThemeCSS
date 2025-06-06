@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <title>soosy.xyz</title>
+  <title>Soosy Cat Machine</title>
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <style>
     body {
@@ -15,30 +15,32 @@
       padding: 1rem;
     }
     h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    #catImg {
+
+    #catContainer {
+      perspective: 1000px;
       width: 280px; max-width: 90vw;
+      cursor: pointer;
+      margin: auto;
+    }
+
+    #catImg {
+      width: 100%;
       border-radius: 12px;
       box-shadow: 0 0 20px gray;
-      cursor: pointer;
-      position: relative;
-      left: 0;
-      /* We'll toggle this class to start animation */
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      transition: box-shadow 0.3s ease;
     }
 
-    /* CSS shuffle animation: slide left & right repeatedly then back to center */
-    @keyframes shuffle {
-      0%   { left: 0; }
-      10%  { left: -40px; }
-      25%  { left: 40px; }
-      40%  { left: -30px; }
-      55%  { left: 30px; }
-      70%  { left: -15px; }
-      85%  { left: 15px; }
-      100% { left: 0; }
+    /* Flip animation */
+    .flipping {
+      animation: flipAnim 3.5s ease forwards;
     }
 
-    .shuffling {
-      animation: shuffle 3.5s ease-in-out forwards;
+    @keyframes flipAnim {
+      0%   { transform: rotateY(0deg); }
+      50%  { transform: rotateY(180deg); }
+      100% { transform: rotateY(360deg); }
     }
 
     #rarityText {
@@ -88,9 +90,11 @@
 </head>
 <body>
 
-  <h1>soosy.xyz cat gambler $$</h1>
+  <h1>Soosy Cat Machine</h1>
   
-  <img id="catImg" src="" alt="HTTP cat" aria-label="HTTP cat image" />
+  <div id="catContainer">
+    <img id="catImg" src="" alt="HTTP cat" aria-label="HTTP cat image" />
+  </div>
   
   <div id="rarityText"></div>
   <button id="rerollBtn">Reroll 🎲</button>
@@ -197,24 +201,32 @@
       if(animating) return;
       animating = true;
 
-      catImg.classList.add("shuffling");
+      catImg.classList.add("flipping");
 
-      let shuffleCount = 20;
-      for(let i=0; i < shuffleCount; i++) {
-        const randomCat = getRandomCat();
-        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
-        rarityText.textContent = "Shuffling...";
-        Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-        catImg.classList.add(rarityClasses[randomCat.rarity]);
-        await new Promise(r => setTimeout(r, 100));
-      }
+      // During animation, cycle images every 150ms for ~3.5 seconds
+      const duration = 3500;
+      const interval = 150;
+      let elapsed = 0;
 
-      catImg.classList.remove("shuffling");
-
-      const finalCat = getRandomCat();
-      showCat(finalCat);
-
-      animating = false;
+      return new Promise(resolve => {
+        const intervalId = setInterval(() => {
+          if(elapsed >= duration) {
+            clearInterval(intervalId);
+            catImg.classList.remove("flipping");
+            const finalCat = getRandomCat();
+            showCat(finalCat);
+            animating = false;
+            resolve();
+          } else {
+            const randomCat = getRandomCat();
+            catImg.src = `https://http.cat/${randomCat.code}.jpg`;
+            rarityText.textContent = "Flipping...";
+            Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+            catImg.classList.add(rarityClasses[randomCat.rarity]);
+            elapsed += interval;
+          }
+        }, interval);
+      });
     }
 
     rerollBtn.onclick = reroll;
