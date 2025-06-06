@@ -2,7 +2,7 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <title>Soosy Cat Machine</title>
+  <title>soosy.xyz</title>
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <style>
     body {
@@ -17,10 +17,12 @@
     h1 { font-size: 2rem; margin-bottom: 0.5rem; }
 
     #catContainer {
-      perspective: 1000px;
       width: 280px; max-width: 90vw;
       cursor: pointer;
       margin: auto;
+      overflow: visible;
+      position: relative;
+      perspective: 1000px;
     }
 
     #catImg {
@@ -30,17 +32,27 @@
       backface-visibility: hidden;
       transform-style: preserve-3d;
       transition: box-shadow 0.3s ease;
+      position: relative;
+      left: 0;
     }
 
-    /* Flip animation */
-    .flipping {
-      animation: flipAnim 3.5s ease forwards;
+    /* Shuffle animation: moves left and right quickly */
+    .shuffling {
+      animation: shuffleAnim 3.5s ease forwards;
     }
 
-    @keyframes flipAnim {
-      0%   { transform: rotateY(0deg); }
-      50%  { transform: rotateY(180deg); }
-      100% { transform: rotateY(360deg); }
+    @keyframes shuffleAnim {
+      0%   { left: 0; }
+      10%  { left: -40px; }
+      20%  { left: 40px; }
+      30%  { left: -30px; }
+      40%  { left: 30px; }
+      50%  { left: -20px; }
+      60%  { left: 20px; }
+      70%  { left: -10px; }
+      80%  { left: 10px; }
+      90%  { left: 0; }
+      100% { left: 0; }
     }
 
     #rarityText {
@@ -90,7 +102,7 @@
 </head>
 <body>
 
-  <h1>Soosy Cat Machine</h1>
+  <h1>soosy.xyz cat gambler $$</h1>
   
   <div id="catContainer">
     <img id="catImg" src="" alt="HTTP cat" aria-label="HTTP cat image" />
@@ -197,36 +209,27 @@
       lastCat = cat;
     }
 
-    async function reroll() {
+    function reroll() {
       if(animating) return;
       animating = true;
 
-      catImg.classList.add("flipping");
+      catImg.classList.add("shuffling");
+      rarityText.textContent = "Shuffling...";
 
-      // During animation, cycle images every 150ms for ~3.5 seconds
-      const duration = 3500;
-      const interval = 150;
-      let elapsed = 0;
+      let shuffleInterval = setInterval(() => {
+        const randomCat = getRandomCat();
+        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
+        Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+        catImg.classList.add(rarityClasses[randomCat.rarity]);
+      }, 150);
 
-      return new Promise(resolve => {
-        const intervalId = setInterval(() => {
-          if(elapsed >= duration) {
-            clearInterval(intervalId);
-            catImg.classList.remove("flipping");
-            const finalCat = getRandomCat();
-            showCat(finalCat);
-            animating = false;
-            resolve();
-          } else {
-            const randomCat = getRandomCat();
-            catImg.src = `https://http.cat/${randomCat.code}.jpg`;
-            rarityText.textContent = "Flipping...";
-            Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-            catImg.classList.add(rarityClasses[randomCat.rarity]);
-            elapsed += interval;
-          }
-        }, interval);
-      });
+      setTimeout(() => {
+        clearInterval(shuffleInterval);
+        catImg.classList.remove("shuffling");
+        const finalCat = getRandomCat();
+        showCat(finalCat);
+        animating = false;
+      }, 3500);
     }
 
     rerollBtn.onclick = reroll;
