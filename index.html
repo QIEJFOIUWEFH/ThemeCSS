@@ -2,7 +2,8 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <title>soosy.xyz</title>
+  <title>Soosy Cat Machine</title>
+  <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <style>
     body {
       margin: 0; font-family: sans-serif;
@@ -23,7 +24,7 @@
       perspective: 600px;
     }
     #catImg.flip {
-      animation: flip 0.35s ease forwards;
+      animation: flip 3.5s ease forwards;
     }
     @keyframes flip {
       0%   { transform: rotateY(0); }
@@ -119,6 +120,16 @@
       "Mythic": "glow-mythic"
     };
 
+    // Rarity chances based on weights (rounded)
+    const rarityChances = {
+      "Common": "53%",
+      "Uncommon": "26%",
+      "Rare": "11%",
+      "Epic": "6%",
+      "Legendary": "3%",
+      "Mythic": "1%"
+    };
+
     const catImg = document.getElementById("catImg");
     const rarityText = document.getElementById("rarityText");
     const rerollBtn = document.getElementById("rerollBtn");
@@ -129,7 +140,6 @@
     let currentCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
 
     function getRandomCat() {
-      // Weight rarities heavily for rarity
       const pool = [];
       cats.forEach(cat => {
         let weight = 1;
@@ -149,7 +159,7 @@
     function showCat(cat) {
       catImg.className = ''; // reset
       catImg.src = `https://http.cat/${cat.code}.jpg`;
-      rarityText.textContent = `Rarity: ${cat.rarity}`;
+      rarityText.textContent = `Rarity: ${cat.rarity} - ${rarityChances[cat.rarity] || "?"}`;
       catImg.classList.add(rarityClasses[cat.rarity]);
       saveInventory(cat.code);
       localStorage.setItem("lastCat", JSON.stringify(cat));
@@ -168,8 +178,9 @@
         .forEach(code => {
           const cat = cats.find(c => c.code == code);
           const rarity = cat ? cat.rarity : "Unknown";
+          const chance = rarityChances[rarity] || "?";
           const li = document.createElement("li");
-          li.textContent = `HTTP ${code} — ${rarity} — x${inventory[code]}`;
+          li.textContent = `HTTP ${code} — ${rarity} - ${chance} — x${inventory[code]}`;
           inventoryList.appendChild(li);
         });
     }
@@ -185,7 +196,7 @@
 
     function reroll() {
       playMusic();
-      const flips = 15;
+      const flips = 12;  // fewer flips because longer animation
       let count = 0;
 
       const interval = setInterval(() => {
@@ -204,9 +215,9 @@
           setTimeout(() => {
             currentCat = getRandomCat();
             showCat(currentCat);
-          }, 350);
+          }, 3500); // match animation duration
         }
-      }, 300);
+      }, 3000 / flips);
     }
 
     rerollBtn.onclick = reroll;
