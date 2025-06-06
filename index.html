@@ -1,255 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>soosy.xyz - HTTP Cats</title>
-<link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg" />
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-  
-  body {
-    margin: 0;
-    height: 100vh;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-    overflow: hidden;
-    font-family: 'Montserrat', sans-serif;
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    user-select: none;
-  }
-  
-  /* Starry background */
-  #stars, #stars2, #stars3 {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top:0;
-    left:0;
-    z-index: -1;
-    pointer-events:none;
-  }
-  #stars {
-    background: transparent url('https://raw.githubusercontent.com/joshwcomeau/react-flags/master/public/starfield/stars.png') repeat;
-    animation: moveStars 50s linear infinite;
-  }
-  #stars2 {
-    background: transparent url('https://raw.githubusercontent.com/joshwcomeau/react-flags/master/public/starfield/stars2.png') repeat;
-    animation: moveStars 100s linear infinite;
-  }
-  #stars3 {
-    background: transparent url('https://raw.githubusercontent.com/joshwcomeau/react-flags/master/public/starfield/stars3.png') repeat;
-    animation: moveStars 150s linear infinite;
-  }
-  
-  @keyframes moveStars {
-    from {background-position: 0 0;}
-    to {background-position: -10000px 5000px;}
-  }
-  
-  h1 {
-    font-weight: 700;
-    font-size: 3rem;
-    margin: 10px 0 5px 0;
-  }
-  
-  .caption {
-    font-size: 1.2rem;
-    color: #bbb;
-    margin-bottom: 15px;
-  }
-  
-  #catImg {
-    width: 320px;
-    max-width: 90vw;
-    border-radius: 16px;
-    box-shadow: 0 0 25px #ff8c00aa;
-    cursor: pointer;
-    transition: filter 0.3s ease;
-    backface-visibility: hidden;
-  }
-  
-  #catImg.spin {
-    animation: spinCase 7s ease-in-out forwards;
-    filter: blur(0);
-  }
-  
-  @keyframes spinCase {
-    0%   { transform: scale(1) rotateY(0deg); filter: blur(2px);}
-    50%  { transform: scale(1.1) rotateY(900deg); filter: blur(8px);}
-    100% { transform: scale(1) rotateY(1800deg); filter: blur(0);}
-  }
-  
-  #rerollBtn {
-    margin-top: 20px;
-    background: linear-gradient(45deg, #ff6a00, #ee0979);
-    border: none;
-    padding: 12px 30px;
-    font-size: 1.2rem;
-    border-radius: 30px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 5px 15px #ee0979cc;
-    transition: background 0.3s ease;
-    user-select: none;
-  }
-  #rerollBtn:hover {
-    background: linear-gradient(45deg, #ee0979, #ff6a00);
-  }
-  
-  #rarityText {
-    margin-top: 12px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #ffa500cc;
-    text-shadow: 0 0 8px #ffa500aa;
-  }
-  
-  #inventory {
-    margin-top: 30px;
-    max-width: 90vw;
-    width: 400px;
-    background: #222b40cc;
-    border-radius: 16px;
-    padding: 15px 25px;
-    box-shadow: 0 0 30px #ee0979aa;
-    font-size: 1rem;
-    color: #ddd;
-  }
-  #inventory h2 {
-    margin: 0 0 10px 0;
-    font-weight: 700;
-    color: #ff6a00;
-  }
-  #inventory ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  #inventory ul li {
-    padding: 4px 0;
-    border-bottom: 1px solid #333;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>soosy.xyz - HTTP Cats</title>
+  <link rel="icon" href="https://http.cat/100.jpg" type="image/jpeg" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    
+    body {
+      margin: 0;
+      height: 100vh;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      user-select: none;
+    }
+    
+    #stars, #stars2, #stars3 {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top:0;
+      left:0;
+      z-index: -1;
+      pointer-events:none;
+    }
+    #stars {
+      background: transparent url('https://raw.githubusercontent.com/joshwcomeau/react-flags/master/public/starfield/stars.png') repeat;
+      animation: moveStars 50s linear infinite;
+    }
+    #stars2 {
+      background: transparent url('https://raw.githubusercontent.com/joshwcomeau/react-flags/master/public/starfield/stars2.png') repeat;
+      animation: moveStars 100s linear infinite;
+    }
+    #stars3 {
+      background: transparent url('https://raw.githubusercontent.com/joshwcomeau/react-flags/master/public/starfield/stars3.png') repeat;
+      animation: moveStars 150s linear infinite;
+    }
+    
+    @keyframes moveStars {
+      from {background-position: 0 0;}
+      to {background-position: -10000px 5000px;}
+    }
+    
+    h1 {
+      font-weight: 700;
+      font-size: 3rem;
+      margin: 10px 0 5px 0;
+    }
+    
+    .caption {
+      font-size: 1.2rem;
+      color: #bbb;
+      margin-bottom: 15px;
+    }
+    
+    #catImg {
+      width: 320px;
+      max-width: 90vw;
+      border-radius: 16px;
+      box-shadow: 0 0 25px #ff8c00aa;
+      cursor: pointer;
+      transition: filter 0.3s ease;
+      backface-visibility: hidden;
+      user-select:none;
+    }
+    
+    #catImg.spin {
+      animation: spinCase 7s ease-in-out forwards;
+      filter: blur(0);
+    }
+    
+    @keyframes spinCase {
+      0%   { transform: scale(1) rotateY(0deg); filter: blur(2px);}
+      50%  { transform: scale(1.1) rotateY(900deg); filter: blur(8px);}
+      100% { transform: scale(1) rotateY(1800deg); filter: blur(0);}
+    }
+    
+    #rerollBtn {
+      margin-top: 20px;
+      background: linear-gradient(45deg, #ff6a00, #ee0979);
+      border: none;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 5px 15px #ee0979cc;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+    #rerollBtn:hover {
+      background: linear-gradient(45deg, #ee0979, #ff6a00);
+    }
+    
+    #rarityText {
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #ffa500cc;
+      text-shadow: 0 0 8px #ffa500aa;
+      min-height: 1.4rem;
+    }
+    
+    #inventory {
+      margin-top: 30px;
+      max-width: 90vw;
+      width: 400px;
+      background: #222b40cc;
+      border-radius: 16px;
+      padding: 15px 25px;
+      box-shadow: 0 0 30px #ee0979aa;
+      font-size: 1rem;
+      color: #ddd;
+    }
+    #inventory h2 {
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      color: #ff6a00;
+    }
+    #inventory ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    #inventory ul li {
+      padding: 4px 0;
+      border-bottom: 1px solid #333;
+    }
+  </style>
 </head>
 <body>
 
-<div id="stars"></div>
-<div id="stars2"></div>
-<div id="stars3"></div>
+  <div id="stars"></div>
+  <div id="stars2"></div>
+  <div id="stars3"></div>
 
-<div class="caption">Click the cat or the button to reroll!</div>
-<img id="catImg" src="" alt="HTTP Cat" />
-<div id="rarityText"></div>
-<button id="rerollBtn">🎲 Reroll Cat</button>
+  <div class="caption">Click the cat or the button to reroll!</div>
+  <img id="catImg" src="" alt="HTTP Cat" />
+  <div id="rarityText"></div>
+  <button id="rerollBtn">🎲 Reroll Cat</button>
 
-<div id="inventory">
-  <h2>Cat Inventory</h2>
-  <ul id="inventoryList"></ul>
-</div>
+  <div id="inventory">
+    <h2>Cat Inventory</h2>
+    <ul id="inventoryList"></ul>
+  </div>
 
-<!-- Your hosted CS:GO case sound via jsDelivr CDN from your GitHub repo -->
-<audio id="csgoSound" src="https://cdn.jsdelivr.net/gh/QIEJFOIUWEFH/soosycdn/csgo-case.mp3"></audio>
+  <!-- Audio element: replace src with your actual hosted mp3 -->
+  <audio id="csgoSound" src="https://cdn.jsdelivr.net/gh/QIEJFOIUWEFH/soosycdn/csgo-case.mp3" preload="auto"></audio>
 
-<script>
-  const cats = [
-    { code: 100, rarity: "Common" },
-    { code: 101, rarity: "Common" },
-    { code: 102, rarity: "Uncommon" },
-    { code: 103, rarity: "Uncommon" },
-    { code: 104, rarity: "Rare" },
-    { code: 105, rarity: "Rare" },
-    { code: 106, rarity: "Epic" },
-    { code: 107, rarity: "Epic" },
-    { code: 108, rarity: "Legendary" },
-    { code: 109, rarity: "Legendary" },
-    { code: 110, rarity: "Mythic" }
-  ];
-  
-  const catImg = document.getElementById('catImg');
-  const rarityText = document.getElementById('rarityText');
-  const rerollBtn = document.getElementById('rerollBtn');
-  const csgoSound = document.getElementById('csgoSound');
-  const inventoryList = document.getElementById('inventoryList');
+  <script>
+    const cats = [
+      { code: 100, rarity: "Common" },
+      { code: 101, rarity: "Common" },
+      { code: 102, rarity: "Uncommon" },
+      { code: 103, rarity: "Uncommon" },
+      { code: 104, rarity: "Rare" },
+      { code: 105, rarity: "Rare" },
+      { code: 106, rarity: "Epic" },
+      { code: 107, rarity: "Epic" },
+      { code: 108, rarity: "Legendary" },
+      { code: 109, rarity: "Legendary" },
+      { code: 110, rarity: "Mythic" }
+    ];
+    
+    const catImg = document.getElementById('catImg');
+    const rarityText = document.getElementById('rarityText');
+    const rerollBtn = document.getElementById('rerollBtn');
+    const csgoSound = document.getElementById('csgoSound');
+    const inventoryList = document.getElementById('inventoryList');
 
-  // Load inventory from localStorage or initialize empty counts
-  let inventory = JSON.parse(localStorage.getItem('catInventory')) || {};
-  
-  // Load last selected cat from localStorage or pick random
-  let currentCat = JSON.parse(localStorage.getItem('selectedCat')) || getRandomCat();
+    // Load inventory from localStorage or initialize empty counts
+    let inventory = JSON.parse(localStorage.getItem('catInventory')) || {};
+    
+    // Load last selected cat from localStorage or pick random
+    let currentCat = JSON.parse(localStorage.getItem('selectedCat')) || getRandomCat();
 
-  // Update inventory counts
-  function updateInventory(catCode) {
-    inventory[catCode] = (inventory[catCode] || 0) + 1;
-    localStorage.setItem('catInventory', JSON.stringify(inventory));
-  }
-
-  // Render inventory list
-  function renderInventory() {
-    inventoryList.innerHTML = '';
-    // Sort by cat code ascending
-    const sortedCodes = Object.keys(inventory).sort((a,b)=>a-b);
-    for (const code of sortedCodes) {
-      const cat = cats.find(c => c.code == code);
-      const count = inventory[code];
-      if (!cat) continue;
-      const li = document.createElement('li');
-      li.textContent = `HTTP ${code} - ${cat.rarity} — Collected: ${count}`;
-      inventoryList.appendChild(li);
+    // Update inventory counts
+    function updateInventory(catCode) {
+      inventory[catCode] = (inventory[catCode] || 0) + 1;
+      localStorage.setItem('catInventory', JSON.stringify(inventory));
     }
-  }
-  
-  // Show cat on the page
-  function showCat(cat) {
-    catImg.src = `https://http.cat/${cat.code}.jpg`;
-    catImg.alt = `HTTP Cat ${cat.code}`;
-    rarityText.textContent = `Rarity: ${cat.rarity}`;
-  }
 
-  // Pick a random cat from the list, but make sure it's not the same as currentCat
-  function getRandomCat() {
-    let newCat;
-    do {
-      newCat = cats[Math.floor(Math.random() * cats.length)];
-    } while (currentCat && newCat.code === currentCat.code);
-    return newCat;
-  }
+    // Render inventory list
+    function renderInventory() {
+      inventoryList.innerHTML = '';
+      // Sort by cat code ascending
+      const sortedCodes = Object.keys(inventory).sort((a,b)=>a-b);
+      for (const code of sortedCodes) {
+        const cat = cats.find(c => c.code == code);
+        const count = inventory[code];
+        if (!cat) continue;
+        const li = document.createElement('li');
+        li.textContent = `HTTP ${code} - ${cat.rarity} — Collected: ${count}`;
+        inventoryList.appendChild(li);
+      }
+    }
+    
+    // Show cat on the page
+    function showCat(cat) {
+      catImg.src = `https://http.cat/${cat.code}.jpg`;
+      catImg.alt = `HTTP Cat ${cat.code}`;
+      rarityText.textContent = `Rarity: ${cat.rarity}`;
+    }
 
-  // Reroll the cat with spin + sound + delay
-  function rerollCat() {
-    const newCat = getRandomCat();
-    catImg.classList.add('spin');
-    csgoSound.currentTime = 0;
-    csgoSound.play().catch(() => {
-      // If sound blocked, ignore
+    // Fallback if image fails to load
+    catImg.onerror = () => {
+      console.error('Failed to load cat image:', catImg.src);
+      rarityText.textContent = "Failed to load cat image :(";
+      catImg.src = "https://http.cat/404.jpg"; // fallback image
+    };
+
+    // Pick a random cat from the list, but make sure it's not the same as currentCat
+    function getRandomCat() {
+      let newCat;
+      do {
+        newCat = cats[Math.floor(Math.random() * cats.length)];
+      } while (currentCat && newCat.code === currentCat.code);
+      return newCat;
+    }
+
+    // Reroll the cat with spin + sound + delay
+    function rerollCat() {
+      const newCat = getRandomCat();
+      catImg.classList.add('spin');
+      
+      // Play sound only if user interacted
+      if (csgoSound.paused) {
+        csgoSound.currentTime = 0;
+        csgoSound.play().catch(() => {
+          // sound play failed (autoplay blocked)
+          console.warn("Sound play was blocked; it will play after user interaction.");
+        });
+      } else {
+        csgoSound.currentTime = 0;
+        csgoSound.play();
+      }
+      
+      setTimeout(() => {
+        currentCat = newCat;
+        showCat(currentCat);
+        updateInventory(currentCat.code);
+        localStorage.setItem('selectedCat', JSON.stringify(currentCat));
+        catImg.classList.remove('spin');
+        renderInventory();
+      }, 7000);
+    }
+
+    // On first load, show saved cat & inventory
+    showCat(currentCat);
+    updateInventory(currentCat.code);
+    renderInventory();
+
+    // Event listeners
+    catImg.addEventListener('click', () => {
+      rerollCat();
     });
-    setTimeout(() => {
-      currentCat = newCat;
-      showCat(currentCat);
-      updateInventory(currentCat.code);
-      localStorage.setItem('selectedCat', JSON.stringify(currentCat));
-      catImg.classList.remove('spin');
-      renderInventory();
-    }, 7000);
-  }
+    rerollBtn.addEventListener('click', () => {
+      rerollCat();
+    });
 
-  // Initial load
-  showCat(currentCat);
-  updateInventory(currentCat.code);
-  renderInventory();
-
-  // Event listeners
-  catImg.addEventListener('click', () => {
-    rerollCat();
-  });
-  rerollBtn.addEventListener('click', () => {
-    rerollCat();
-  });
-</script>
-
+  </script>
 </body>
 </html>
