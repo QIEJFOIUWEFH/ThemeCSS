@@ -13,11 +13,19 @@
       color: white;
       text-align: center;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-direction: row;
       justify-content: center;
       min-height: 100vh;
       padding: 1rem;
+      overflow-x: hidden;
+    }
+    main {
+      flex: 1;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
     h1 {
       font-size: 2rem;
@@ -69,6 +77,7 @@
       font-size: 1rem;
       cursor: pointer;
       font-family: 'Poppins', sans-serif;
+      user-select: none;
     }
     #inventory {
       margin-top: 30px;
@@ -105,25 +114,129 @@
     .glow-epic      { box-shadow: 0 0 15px #9b59b6; }
     .glow-legendary { box-shadow: 0 0 20px #e67e22; }
     .glow-mythic    { box-shadow: 0 0 25px #f1c40f, 0 0 40px #f39c12; }
+
+    /* Leaderboard styles */
+    #leaderboard {
+      width: 300px;
+      background: rgba(255 255 255 / 0.1);
+      margin-left: 30px;
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #ddd;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 0 10px #ff6a00;
+      display: flex;
+      flex-direction: column;
+    }
+    #leaderboard h2 {
+      margin: 0 0 12px;
+      font-weight: 600;
+      color: #ee0979;
+      text-align: center;
+      user-select: none;
+    }
+    #leaderboard ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-grow: 1;
+    }
+    #leaderboard li {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      background: rgba(255 255 255 / 0.05);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      user-select: none;
+      cursor: default;
+      transition: background 0.3s ease;
+    }
+    #leaderboard li:hover {
+      background: rgba(255 255 255 / 0.15);
+    }
+
+    /* Username modal styles */
+    #usernameModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      user-select: none;
+    }
+    #usernameModal h2 {
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-size: 1.8rem;
+    }
+    #usernameModal input {
+      padding: 10px 15px;
+      border-radius: 12px;
+      border: none;
+      width: 260px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    #usernameModal button {
+      width: 100%;
+      font-size: 1rem;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(45deg, #ff6a00, #ee0979);
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+    }
+    #usernameError {
+      color: #f44336;
+      margin-bottom: 8px;
+      font-weight: 600;
+      min-height: 1.2em;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
 
-  <h1></h1></h1>
-  <div id="catContainer">
-    <img id="catImg" src="" alt="HTTP cat" />
+  <div id="usernameModal" style="display:none;">
+    <h2>Choose Your Username</h2>
+    <input type="text" id="usernameInput" placeholder="Enter username (no spaces)" maxlength="20" autocomplete="off" />
+    <div id="usernameError"></div>
+    <button id="setUsernameBtn">Set Username</button>
   </div>
-  <div id="rarityText"></div>
-  <button id="rerollBtn">Reroll</button>
 
-  <div id="inventory">
-    <h2>Inventory</h2>
-    <ul id="inventoryList"></ul>
-  </div>
+  <main>
+    <h1>HTTP Cat Reroll</h1>
+    <div id="catContainer">
+      <img id="catImg" src="" alt="HTTP cat" />
+    </div>
+    <div id="rarityText"></div>
+    <button id="rerollBtn">Reroll</button>
+
+    <div id="inventory">
+      <h2>Inventory</h2>
+      <ul id="inventoryList"></ul>
+    </div>
+  </main>
+
+  <aside id="leaderboard">
+    <h2>Leaderboard - Most Rolls</h2>
+    <ul id="leaderboardList"></ul>
+  </aside>
 
   <script>
-  ;
-
     const cats = [
       { code: 200, rarity: "Common" },
       { code: 201, rarity: "Common" },
@@ -158,14 +271,94 @@
       "Mythic": "0.5%"
     };
 
+    // Elements
     const catImg = document.getElementById("catImg");
     const rarityText = document.getElementById("rarityText");
     const rerollBtn = document.getElementById("rerollBtn");
     const inventoryList = document.getElementById("inventoryList");
+    const leaderboardList = document.getElementById("leaderboardList");
 
+    const usernameModal = document.getElementById("usernameModal");
+    const usernameInput = document.getElementById("usernameInput");
+    const setUsernameBtn = document.getElementById("setUsernameBtn");
+    const usernameError = document.getElementById("usernameError");
+
+    // State
     let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
     let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
     let animating = false;
+
+    // User data & leaderboard stored like this:
+    // localStorage "users" = { username1: { rolls: num }, username2: { rolls: num } }
+    // localStorage "currentUser" = username string
+
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    let currentUser = localStorage.getItem("currentUser");
+
+    // Helper: check if username valid
+    function isUsernameValid(name) {
+      return /^[a-zA-Z0-9_-]{3,20}$/.test(name);
+    }
+
+    // Helper: check if username taken
+    function isUsernameTaken(name) {
+      return Object.hasOwn(users, name.toLowerCase());
+    }
+
+    // Show username modal if no current user set
+    function promptUsername() {
+      usernameModal.style.display = "flex";
+      usernameInput.focus();
+    }
+
+    // Set username if valid and unique
+    function setUsername() {
+      const name = usernameInput.value.trim();
+      const lowerName = name.toLowerCase();
+
+      if (!isUsernameValid(name)) {
+        usernameError.textContent = "3-20 chars: letters, numbers, _ or - only";
+        return;
+      }
+      if (currentUser && lowerName === currentUser) {
+        // Same username as before, allow it silently
+        usernameModal.style.display = "none";
+        usernameError.textContent = "";
+        usernameInput.value = "";
+        return;
+      }
+      if (isUsernameTaken(lowerName)) {
+        usernameError.textContent = "Username taken, try another";
+        return;
+      }
+
+      // Add to users list with 0 rolls if new
+      if (!users[lowerName]) users[lowerName] = { rolls: 0 };
+
+      currentUser = lowerName;
+      localStorage.setItem("currentUser", currentUser);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      usernameModal.style.display = "none";
+      usernameError.textContent = "";
+      usernameInput.value = "";
+
+      renderLeaderboard();
+    }
+
+    setUsernameBtn.onclick = setUsername;
+    usernameInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") setUsername();
+    });
+
+    // If no user set, prompt for username
+    if (!currentUser) {
+      promptUsername();
+    } else {
+      // Make sure current user is in users
+      if (!users[currentUser]) users[currentUser] = { rolls: 0 };
+      localStorage.setItem("users", JSON.stringify(users));
+    }
 
     function getRandomCat() {
       const pool = [];
@@ -214,7 +407,40 @@
       lastCat = cat;
     }
 
+    // Update leaderboard UI
+    function renderLeaderboard() {
+      leaderboardList.innerHTML = "";
+      // Sort users by rolls descending
+      const sorted = Object.entries(users)
+        .sort((a, b) => b[1].rolls - a[1].rolls)
+        .slice(0, 10); // top 10
+
+      sorted.forEach(([username, data], i) => {
+        const li = document.createElement("li");
+        li.textContent = username;
+        const span = document.createElement("span");
+        span.textContent = data.rolls;
+        li.appendChild(span);
+        if (username === currentUser) {
+          li.style.background = "linear-gradient(45deg, #ff6a00, #ee0979)";
+          li.style.color = "white";
+        }
+        leaderboardList.appendChild(li);
+      });
+
+      if (sorted.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No rolls yet";
+        leaderboardList.appendChild(li);
+      }
+    }
+
     function reroll() {
+      if (!currentUser) {
+        alert("Please set a username first!");
+        promptUsername();
+        return;
+      }
       if (animating) return;
       animating = true;
 
@@ -233,15 +459,25 @@
         catImg.classList.remove("shuffling");
         const finalCat = getRandomCat();
         showCat(finalCat);
+
+        // Increment roll count for current user
+        users[currentUser].rolls = (users[currentUser].rolls || 0) + 1;
+        localStorage.setItem("users", JSON.stringify(users));
+
+        renderLeaderboard();
         animating = false;
       }, 3500);
     }
 
     rerollBtn.onclick = reroll;
 
-    // Show last cat on load
-    showCat(lastCat);
-    renderInventory();
+    // Show last cat on load if username set
+    if (currentUser) {
+      showCat(lastCat);
+      renderInventory();
+      renderLeaderboard();
+    }
+
   </script>
 </body>
 </html>
