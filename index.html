@@ -6,7 +6,7 @@
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* ... your existing CSS unchanged ... */
+    /* Your existing CSS here, unchanged */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -189,8 +189,8 @@
     let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
     rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
-    // Flag to allow roll only on user click
-    let userInitiatedRoll = false;
+    // This flag ONLY allows rolling if user clicked button
+    let userHasClicked = false;
 
     function getRandomCat() {
       const pool = [];
@@ -240,25 +240,20 @@
     }
 
     function reroll() {
-      if (!userInitiatedRoll) {
-        console.warn("Reroll blocked: not user initiated.");
+      if (animating) return;
+      if (!userHasClicked) {
+        alert("You must click the 'Reroll' button to roll!");
         return;
       }
-      if (animating) return;
       animating = true;
-
       catImg.classList.add("shuffling");
       rarityText.textContent = "Shuffling...";
 
       let shuffleInterval = setInterval(() => {
-        const cat = getRandomCat();
-        catImg.src = `https://http.cat/${cat.code}.jpg`;
+        const randomCat = getRandomCat();
+        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
         Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-        catImg.classList.add(rarityClasses[cat.rarity]);
-        // Log and update inventory live on shuffle:
-        console.log(`Rolled: HTTP ${cat.code} ${cat.rarity} (${rarityChances[cat.rarity]})`);
-        saveInventory(cat.code);
-        renderInventory();
+        catImg.classList.add(rarityClasses[randomCat.rarity]);
       }, 150);
 
       setTimeout(() => {
@@ -272,15 +267,20 @@
         rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
         animating = false;
-        userInitiatedRoll = false;  // Reset flag after roll done
+        // reset the user click flag after one successful roll
+        userHasClicked = false;
       }, 3500);
     }
 
     rerollBtn.onclick = () => {
-      userInitiatedRoll = true;  // Set flag only on button click
+      userHasClicked = true;  // user confirmed roll by clicking button
       reroll();
     };
 
+    // Disable auto roll by making sure reroll() can't run unless user clicked the button
+    // So no automatic calls to reroll() in code or console will work
+
+    // Initialize display with last cat
     showCat(lastCat);
     renderInventory();
   </script>
