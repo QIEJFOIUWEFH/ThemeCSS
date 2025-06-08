@@ -182,38 +182,8 @@
     const inventoryList = document.getElementById("inventoryList");
     const rollCounterDiv = document.getElementById("rollCounter");
 
-    // Validate a cat object from localStorage, returns boolean
-    function isValidCat(cat) {
-      if (!cat || typeof cat !== 'object') return false;
-      if (typeof cat.code !== 'number') return false;
-      if (typeof cat.rarity !== 'string') return false;
-      return cats.some(c => c.code === cat.code && c.rarity === cat.rarity);
-    }
-
-    // Validate inventory object from localStorage, filter out invalid cats
-    function validateInventory(inv) {
-      if (typeof inv !== 'object' || inv === null) return {};
-      const validated = {};
-      for (const [code, count] of Object.entries(inv)) {
-        const numericCode = Number(code);
-        if (
-          cats.some(c => c.code === numericCode) &&
-          Number.isInteger(count) &&
-          count > 0
-        ) {
-          validated[numericCode] = count;
-        }
-      }
-      return validated;
-    }
-
-    // Load inventory safely
-    let inventory = validateInventory(JSON.parse(localStorage.getItem("inventory") || "{}"));
-
-    // Load last cat safely or generate new random cat
-    let storedLastCat = JSON.parse(localStorage.getItem("lastCat"));
-    let lastCat = isValidCat(storedLastCat) ? storedLastCat : getRandomCat();
-
+    let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
+    let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
     let animating = false;
     let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
     rollCounterDiv.textContent = `Rolls: ${rollCount}`;
@@ -237,7 +207,6 @@
 
     function saveInventory(code) {
       inventory[code] = (inventory[code] || 0) + 1;
-      inventory = validateInventory(inventory); // clean invalid data if any
       localStorage.setItem("inventory", JSON.stringify(inventory));
       renderInventory();
     }
@@ -274,10 +243,14 @@
       rarityText.textContent = "Shuffling...";
 
       let shuffleInterval = setInterval(() => {
-        const randomCat = getRandomCat();
-        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
+        const cat = getRandomCat();
+        catImg.src = `https://http.cat/${cat.code}.jpg`;
         Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-        catImg.classList.add(rarityClasses[randomCat.rarity]);
+        catImg.classList.add(rarityClasses[cat.rarity]);
+        // Log and update inventory live on shuffle:
+        console.log(`Rolled: HTTP ${cat.code} ${cat.rarity} (${rarityChances[cat.rarity]})`);
+        saveInventory(cat.code);
+        renderInventory();
       }, 150);
 
       setTimeout(() => {
