@@ -6,7 +6,6 @@
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* Your existing CSS here, unchanged */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -143,146 +142,149 @@
   </main>
 
   <script>
-    const cats = [
-      { code: 200, rarity: "Common" },
-      { code: 201, rarity: "Common" },
-      { code: 202, rarity: "Uncommon" },
-      { code: 204, rarity: "Uncommon" },
-      { code: 206, rarity: "Rare" },
-      { code: 301, rarity: "Rare" },
-      { code: 304, rarity: "Epic" },
-      { code: 400, rarity: "Epic" },
-      { code: 401, rarity: "Legendary" },
-      { code: 403, rarity: "Legendary" },
-      { code: 404, rarity: "Mythic" },
-      { code: 418, rarity: "Mythic" },
-      { code: 500, rarity: "Mythic" }
-    ];
+    (function(){
+      const cats = [
+        { code: 200, rarity: "Common" },
+        { code: 201, rarity: "Common" },
+        { code: 202, rarity: "Uncommon" },
+        { code: 204, rarity: "Uncommon" },
+        { code: 206, rarity: "Rare" },
+        { code: 301, rarity: "Rare" },
+        { code: 304, rarity: "Epic" },
+        { code: 400, rarity: "Epic" },
+        { code: 401, rarity: "Legendary" },
+        { code: 403, rarity: "Legendary" },
+        { code: 404, rarity: "Mythic" },
+        { code: 418, rarity: "Mythic" },
+        { code: 500, rarity: "Mythic" }
+      ];
 
-    const rarityClasses = {
-      "Common": "glow-common",
-      "Uncommon": "glow-uncommon",
-      "Rare": "glow-rare",
-      "Epic": "glow-epic",
-      "Legendary": "glow-legendary",
-      "Mythic": "glow-mythic"
-    };
+      const rarityClasses = {
+        "Common": "glow-common",
+        "Uncommon": "glow-uncommon",
+        "Rare": "glow-rare",
+        "Epic": "glow-epic",
+        "Legendary": "glow-legendary",
+        "Mythic": "glow-mythic"
+      };
 
-    const rarityChances = {
-      "Common": "75%",
-      "Uncommon": "15%",
-      "Rare": "5%",
-      "Epic": "3%",
-      "Legendary": "1.5%",
-      "Mythic": "0.5%"
-    };
+      const rarityChances = {
+        "Common": "75%",
+        "Uncommon": "15%",
+        "Rare": "5%",
+        "Epic": "3%",
+        "Legendary": "1.5%",
+        "Mythic": "0.5%"
+      };
 
-    const catImg = document.getElementById("catImg");
-    const rarityText = document.getElementById("rarityText");
-    const rerollBtn = document.getElementById("rerollBtn");
-    const inventoryList = document.getElementById("inventoryList");
-    const rollCounterDiv = document.getElementById("rollCounter");
+      const catImg = document.getElementById("catImg");
+      const rarityText = document.getElementById("rarityText");
+      const rerollBtn = document.getElementById("rerollBtn");
+      const inventoryList = document.getElementById("inventoryList");
+      const rollCounterDiv = document.getElementById("rollCounter");
 
-    let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
-    let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
-    let animating = false;
-    let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
-    rollCounterDiv.textContent = `Rolls: ${rollCount}`;
+      let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
+      let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
+      let animating = false;
+      let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
+      rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
-    // This flag ONLY allows rolling if user clicked button
-    let userHasClicked = false;
-
-    function getRandomCat() {
-      const pool = [];
-      cats.forEach(cat => {
-        let weight = 1;
-        switch (cat.rarity) {
-          case "Common": weight = 150; break;
-          case "Uncommon": weight = 30; break;
-          case "Rare": weight = 10; break;
-          case "Epic": weight = 6; break;
-          case "Legendary": weight = 3; break;
-          case "Mythic": weight = 1; break;
-        }
-        for (let i = 0; i < weight; i++) pool.push(cat);
-      });
-      return pool[Math.floor(Math.random() * pool.length)];
-    }
-
-    function saveInventory(code) {
-      inventory[code] = (inventory[code] || 0) + 1;
-      localStorage.setItem("inventory", JSON.stringify(inventory));
-      renderInventory();
-    }
-
-    function renderInventory() {
-      inventoryList.innerHTML = '';
-      Object.keys(inventory)
-        .sort((a, b) => a - b)
-        .forEach(code => {
-          const cat = cats.find(c => c.code == code);
-          const rarity = cat ? cat.rarity : "Unknown";
-          const chance = rarityChances[rarity] || "?";
-          const li = document.createElement("li");
-          li.textContent = `HTTP ${code} — ${rarity} - ${chance} — x${inventory[code]}`;
-          inventoryList.appendChild(li);
+      function getRandomCat() {
+        const pool = [];
+        cats.forEach(cat => {
+          let weight = 1;
+          switch (cat.rarity) {
+            case "Common": weight = 150; break;
+            case "Uncommon": weight = 30; break;
+            case "Rare": weight = 10; break;
+            case "Epic": weight = 6; break;
+            case "Legendary": weight = 3; break;
+            case "Mythic": weight = 1; break;
+          }
+          for (let i = 0; i < weight; i++) pool.push(cat);
         });
-    }
-
-    function showCat(cat) {
-      catImg.src = `https://http.cat/${cat.code}.jpg`;
-      rarityText.textContent = `Rarity: ${cat.rarity} — ${rarityChances[cat.rarity] || "?"}`;
-      Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-      catImg.classList.add(rarityClasses[cat.rarity]);
-      saveInventory(cat.code);
-      localStorage.setItem("lastCat", JSON.stringify(cat));
-      lastCat = cat;
-    }
-
-    function reroll() {
-      if (animating) return;
-      if (!userHasClicked) {
-        alert("You must click the 'Reroll' button to roll!");
-        return;
+        return pool[Math.floor(Math.random() * pool.length)];
       }
-      animating = true;
-      catImg.classList.add("shuffling");
-      rarityText.textContent = "Shuffling...";
 
-      let shuffleInterval = setInterval(() => {
-        const randomCat = getRandomCat();
-        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
+      function saveInventory(code) {
+        inventory[code] = (inventory[code] || 0) + 1;
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        renderInventory();
+      }
+
+      function renderInventory() {
+        inventoryList.innerHTML = '';
+        Object.keys(inventory)
+          .sort((a, b) => a - b)
+          .forEach(code => {
+            const cat = cats.find(c => c.code == code);
+            const rarity = cat ? cat.rarity : "Unknown";
+            const chance = rarityChances[rarity] || "?";
+            const li = document.createElement("li");
+            li.textContent = `HTTP ${code} — ${rarity} - ${chance} — x${inventory[code]}`;
+            inventoryList.appendChild(li);
+          });
+      }
+
+      function showCat(cat) {
+        catImg.src = `https://http.cat/${cat.code}.jpg`;
+        rarityText.textContent = `Rarity: ${cat.rarity} — ${rarityChances[cat.rarity] || "?"}`;
         Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-        catImg.classList.add(rarityClasses[randomCat.rarity]);
-      }, 150);
+        catImg.classList.add(rarityClasses[cat.rarity]);
+        saveInventory(cat.code);
+        localStorage.setItem("lastCat", JSON.stringify(cat));
+        lastCat = cat;
+      }
 
-      setTimeout(() => {
-        clearInterval(shuffleInterval);
-        catImg.classList.remove("shuffling");
-        const finalCat = getRandomCat();
-        showCat(finalCat);
+      // Private reroll function, only accessible inside this closure
+      let canRoll = false;
+      function doReroll() {
+        if (!canRoll) {
+          console.log("You must click the button to roll!");
+          return;
+        }
+        if (animating) return;
+        animating = true;
+        canRoll = false; // reset permission immediately
 
-        rollCount++;
-        localStorage.setItem("rollCount", rollCount);
-        rollCounterDiv.textContent = `Rolls: ${rollCount}`;
+        catImg.classList.add("shuffling");
+        rarityText.textContent = "Shuffling...";
 
-        animating = false;
-        // reset the user click flag after one successful roll
-        userHasClicked = false;
-      }, 3500);
-    }
+        let shuffleInterval = setInterval(() => {
+          const randomCat = getRandomCat();
+          catImg.src = `https://http.cat/${randomCat.code}.jpg`;
+          Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
+          catImg.classList.add(rarityClasses[randomCat.rarity]);
+        }, 150);
 
-    rerollBtn.onclick = () => {
-      userHasClicked = true;  // user confirmed roll by clicking button
-      reroll();
-    };
+        setTimeout(() => {
+          clearInterval(shuffleInterval);
+          catImg.classList.remove("shuffling");
+          const finalCat = getRandomCat();
+          showCat(finalCat);
 
-    // Disable auto roll by making sure reroll() can't run unless user clicked the button
-    // So no automatic calls to reroll() in code or console will work
+          rollCount++;
+          localStorage.setItem("rollCount", rollCount);
+          rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
-    // Initialize display with last cat
-    showCat(lastCat);
-    renderInventory();
+          animating = false;
+        }, 3500);
+      }
+
+      rerollBtn.onclick = () => {
+        canRoll = true;
+        doReroll();
+      };
+
+      // Expose a dummy reroll function to the global scope that warns user
+      window.reroll = () => {
+        console.log("Use the button to roll. Direct calls are disabled.");
+      };
+
+      // Initial display
+      showCat(lastCat);
+      renderInventory();
+    })();
   </script>
 </body>
 </html>
