@@ -6,6 +6,7 @@
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    /* ... your existing CSS unchanged ... */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -188,6 +189,9 @@
     let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
     rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
+    // Flag to allow roll only on user click
+    let userInitiatedRoll = false;
+
     function getRandomCat() {
       const pool = [];
       cats.forEach(cat => {
@@ -236,6 +240,10 @@
     }
 
     function reroll() {
+      if (!userInitiatedRoll) {
+        console.warn("Reroll blocked: not user initiated.");
+        return;
+      }
       if (animating) return;
       animating = true;
 
@@ -264,10 +272,12 @@
         rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
         animating = false;
+        userInitiatedRoll = false;  // Reset flag after roll done
       }, 3500);
     }
 
     rerollBtn.onclick = () => {
+      userInitiatedRoll = true;  // Set flag only on button click
       reroll();
     };
 
