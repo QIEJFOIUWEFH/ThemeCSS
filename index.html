@@ -109,34 +109,20 @@
 </head>
 <body>
 
-  <h1>soosy.xyz cat gambler $$</h1>
+  <h1>-</h1></h1>
   <div id="catContainer">
     <img id="catImg" src="" alt="HTTP cat" />
   </div>
   <div id="rarityText"></div>
-  <button id="rerollBtn">Reroll 🎲</button>
+  <button id="rerollBtn">Reroll</button>
 
   <div id="inventory">
     <h2>Inventory</h2>
     <ul id="inventoryList"></ul>
   </div>
 
-  <!-- 🎵 Background Music -->
-  <audio id="bg-music" src="https://raw.githubusercontent.com/QIEJFOIUWEFH/soosycdn/main/cats-soosy.mp3" autoplay loop></audio>
-
   <script>
-    // Attempt to play music after user interaction if blocked
-    document.addEventListener("DOMContentLoaded", () => {
-      const audio = document.getElementById("bg-music");
-      const tryPlay = () => {
-        audio.volume = 0.5;
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {});
-        }
-      };
-      document.body.addEventListener("click", tryPlay, { once: true });
-    });
+  ;
 
     const cats = [
       { code: 200, rarity: "Common" },
