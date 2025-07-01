@@ -1,290 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>soosy.xyz</title>
-  <link rel="icon" href="https://github.com/QIEJFOIUWEFH/soosycdn/blob/main/419.jpg?raw=true" type="image/jpeg" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      color: white;
-      text-align: center;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
-      overflow-x: hidden;
-    }
-    main {
-      flex: 1;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    #catContainer {
-      width: 280px;
-      max-width: 90vw;
-      margin: auto;
-      perspective: 1000px;
-      position: relative;
-    }
-    #catImg {
-      width: 100%;
-      border-radius: 12px;
-      backface-visibility: hidden;
-      transform-style: preserve-3d;
-      transition: box-shadow 0.3s ease;
-      position: relative;
-    }
-    .shuffling {
-      animation: shuffleAnim 3.5s ease forwards;
-    }
-    @keyframes shuffleAnim {
-      0% { left: 0; }
-      15% { left: -30px; }
-      30% { left: 30px; }
-      45% { left: -20px; }
-      60% { left: 20px; }
-      75% { left: -10px; }
-      90% { left: 10px; }
-      100% { left: 0; }
-    }
-    #rarityText {
-      margin-top: 8px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      min-height: 1.4em;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 25px;
-      border-radius: 20px;
-      border: none;
-      background: linear-gradient(45deg, #ff6a00, #ee0979);
-      color: white;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      user-select: none;
-    }
-    #rollCounter {
-      margin-top: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ffc107;
-      user-select: none;
-      min-height: 1.2em;
-    }
-    #inventory {
-      margin-top: 30px;
-      background: rgba(255 255 255 / 0.1);
-      padding: 12px 20px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 400px;
-      text-align: left;
-      font-size: 0.9rem;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-    #inventory h2 {
-      margin: 0 0 8px;
-      font-weight: 600;
-      color: #ffc107;
-      text-align: center;
-    }
-    #inventory ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    #inventory li {
-      margin-bottom: 5px;
-      border-bottom: 1px solid rgba(255 255 255 / 0.1);
-      padding-bottom: 3px;
-      color: #ddd;
-    }
-    .glow-common    { box-shadow: 0 0 15px gray; }
-    .glow-uncommon  { box-shadow: 0 0 15px #2ecc71; }
-    .glow-rare      { box-shadow: 0 0 15px #3498db; }
-    .glow-epic      { box-shadow: 0 0 15px #9b59b6; }
-    .glow-legendary { box-shadow: 0 0 20px #e67e22; }
-    .glow-mythic    { box-shadow: 0 0 25px #f1c40f, 0 0 40px #f39c12; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In Development</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500&display=swap');
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .dev-text {
+            font-size: 3.5rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            animation: pulse 2s ease-in-out infinite alternate;
+            
+            /* White glow stroke effect */
+            text-shadow: 
+                0 0 6px rgba(255, 255, 255, 0.8),
+                0 0 12px rgba(255, 255, 255, 0.6),
+                0 0 18px rgba(255, 255, 255, 0.4),
+                0 0 24px rgba(255, 255, 255, 0.3),
+                0 0 30px rgba(255, 255, 255, 0.2),
+                
+                /* Subtle stroke effect */
+                -1px -1px 0 rgba(255, 255, 255, 0.3),
+                1px -1px 0 rgba(255, 255, 255, 0.3),
+                -1px 1px 0 rgba(255, 255, 255, 0.3),
+                1px 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #fff;
+            font-size: 1rem;
+            animation: fall linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            from {
+                transform: translateY(-100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <main>
-    <h1></h1>
-    <div id="catContainer">
-      <img id="catImg" src="" alt="HTTP cat" />
+    <div class="container">
+        <h1 class="dev-text">in development</h1>
     </div>
-    <div id="rarityText"></div>
-    <button id="rerollBtn">Reroll</button>
-    <div id="rollCounter">Rolls: 0</div>
 
-    <div id="inventory">
-      <h2>Inventory</h2>
-      <ul id="inventoryList"></ul>
-    </div>
-  </main>
-
-  <script>
-    (function(){
-      const cats = [
-        { code: 200, rarity: "Common" },
-        { code: 201, rarity: "Common" },
-        { code: 202, rarity: "Uncommon" },
-        { code: 204, rarity: "Uncommon" },
-        { code: 206, rarity: "Rare" },
-        { code: 301, rarity: "Rare" },
-        { code: 304, rarity: "Epic" },
-        { code: 400, rarity: "Epic" },
-        { code: 401, rarity: "Legendary" },
-        { code: 403, rarity: "Legendary" },
-        { code: 404, rarity: "Mythic" },
-        { code: 418, rarity: "Mythic" },
-        { code: 500, rarity: "Mythic" }
-      ];
-
-      const rarityClasses = {
-        "Common": "glow-common",
-        "Uncommon": "glow-uncommon",
-        "Rare": "glow-rare",
-        "Epic": "glow-epic",
-        "Legendary": "glow-legendary",
-        "Mythic": "glow-mythic"
-      };
-
-      const rarityChances = {
-        "Common": "75%",
-        "Uncommon": "15%",
-        "Rare": "5%",
-        "Epic": "3%",
-        "Legendary": "1.5%",
-        "Mythic": "0.5%"
-      };
-
-      const catImg = document.getElementById("catImg");
-      const rarityText = document.getElementById("rarityText");
-      const rerollBtn = document.getElementById("rerollBtn");
-      const inventoryList = document.getElementById("inventoryList");
-      const rollCounterDiv = document.getElementById("rollCounter");
-
-      let inventory = JSON.parse(localStorage.getItem("inventory") || "{}");
-      let lastCat = JSON.parse(localStorage.getItem("lastCat")) || getRandomCat();
-      let animating = false;
-      let rollCount = parseInt(localStorage.getItem("rollCount") || "0");
-      rollCounterDiv.textContent = `Rolls: ${rollCount}`;
-
-      function getRandomCat() {
-        const pool = [];
-        cats.forEach(cat => {
-          let weight = 1;
-          switch (cat.rarity) {
-            case "Common": weight = 150; break;
-            case "Uncommon": weight = 30; break;
-            case "Rare": weight = 10; break;
-            case "Epic": weight = 6; break;
-            case "Legendary": weight = 3; break;
-            case "Mythic": weight = 1; break;
-          }
-          for (let i = 0; i < weight; i++) pool.push(cat);
-        });
-        return pool[Math.floor(Math.random() * pool.length)];
-      }
-
-      function saveInventory(code) {
-        inventory[code] = (inventory[code] || 0) + 1;
-        localStorage.setItem("inventory", JSON.stringify(inventory));
-        renderInventory();
-      }
-
-      function renderInventory() {
-        inventoryList.innerHTML = '';
-        Object.keys(inventory)
-          .sort((a, b) => a - b)
-          .forEach(code => {
-            const cat = cats.find(c => c.code == code);
-            const rarity = cat ? cat.rarity : "Unknown";
-            const chance = rarityChances[rarity] || "?";
-            const li = document.createElement("li");
-            li.textContent = `HTTP ${code} — ${rarity} - ${chance} — x${inventory[code]}`;
-            inventoryList.appendChild(li);
-          });
-      }
-
-      function showCat(cat) {
-        catImg.src = `https://http.cat/${cat.code}.jpg`;
-        rarityText.textContent = `Rarity: ${cat.rarity} — ${rarityChances[cat.rarity] || "?"}`;
-        Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-        catImg.classList.add(rarityClasses[cat.rarity]);
-        saveInventory(cat.code);
-        localStorage.setItem("lastCat", JSON.stringify(cat));
-        lastCat = cat;
-      }
-
-      // Private reroll function, only accessible inside this closure
-      let canRoll = false;
-      function doReroll() {
-        if (!canRoll) {
-          console.log("You must click the button to roll!");
-          return;
+    <script>
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            
+            // Random horizontal position
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            
+            // Random animation duration (speed)
+            const duration = Math.random() * 3 + 2; // 2-5 seconds
+            snowflake.style.animationDuration = duration + 's';
+            
+            // Random size
+            const size = Math.random() * 0.8 + 0.6; // 0.6-1.4rem
+            snowflake.style.fontSize = size + 'rem';
+            
+            // Random opacity
+            snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+            
+            document.body.appendChild(snowflake);
+            
+            // Remove snowflake after animation
+            setTimeout(() => {
+                if (snowflake.parentNode) {
+                    snowflake.parentNode.removeChild(snowflake);
+                }
+            }, duration * 1000);
         }
-        if (animating) return;
-        animating = true;
-        canRoll = false; // reset permission immediately
 
-        catImg.classList.add("shuffling");
-        rarityText.textContent = "Shuffling...";
-
-        let shuffleInterval = setInterval(() => {
-          const randomCat = getRandomCat();
-          catImg.src = `https://http.cat/${randomCat.code}.jpg`;
-          Object.values(rarityClasses).forEach(cls => catImg.classList.remove(cls));
-          catImg.classList.add(rarityClasses[randomCat.rarity]);
-        }, 150);
-
-        setTimeout(() => {
-          clearInterval(shuffleInterval);
-          catImg.classList.remove("shuffling");
-          const finalCat = getRandomCat();
-          showCat(finalCat);
-
-          rollCount++;
-          localStorage.setItem("rollCount", rollCount);
-          rollCounterDiv.textContent = `Rolls: ${rollCount}`;
-
-          animating = false;
-        }, 3500);
-      }
-
-      rerollBtn.onclick = () => {
-        canRoll = true;
-        doReroll();
-      };
-
-      // Expose a dummy reroll function to the global scope that warns user
-      window.reroll = () => {
-        console.log("Use the button to roll. Direct calls are disabled.");
-      };
-
-      // Initial display
-      showCat(lastCat);
-      renderInventory();
-    })();
-  </script>
+        // Create snowflakes continuously
+        setInterval(createSnowflake, 100);
+        
+        // Create initial batch
+        for (let i = 0; i < 100; i++) {
+            setTimeout(createSnowflake, i * 50);
+        }
+    </script>
 </body>
 </html>
