@@ -3,68 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snowy Night</title>
+  <title>Black Page</title>
   <style>
-    /* Basic page setup */
     body {
       margin: 0;
       height: 100vh;
-      background: #000; /* Black night sky */
-      overflow: hidden;
-      font-family: sans-serif;
-    }
-
-    /* Snowflake style */
-    .snowflake {
-      position: absolute;
-      top: -10px;
-      color: #fff;
-      opacity: 0.8;
-      user-select: none;
-      pointer-events: none;
-      font-size: 1em;
-      animation-name: fall, drift;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-    }
-
-    /* Falling animation */
-    @keyframes fall {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(100vh); }
-    }
-
-    /* Horizontal drifting animation */
-    @keyframes drift {
-      0% { transform: translateX(0); }
-      50% { transform: translateX(30px); }
-      100% { transform: translateX(0); }
+      background-color: black;
     }
   </style>
 </head>
 <body>
-  <script>
-    const numberOfFlakes = 120; // More snowflakes for a fuller effect
-
-    for (let i = 0; i < numberOfFlakes; i++) {
-      const flake = document.createElement('div');
-      flake.classList.add('snowflake');
-      flake.textContent = '❄'; // Unicode snowflake
-
-      // Random starting position
-      flake.style.left = Math.random() * window.innerWidth + 'px';
-
-      // Random size and opacity
-      const size = Math.random() * 20 + 10;
-      flake.style.fontSize = `${size}px`;
-      flake.style.opacity = Math.random() * 0.6 + 0.4;
-
-      // Random animation duration and delay
-      flake.style.animationDuration = `${Math.random() * 5 + 5}s, ${Math.random() * 4 + 3}s`;
-      flake.style.animationDelay = `${Math.random() * 5}s, ${Math.random() * 3}s`;
-
-      document.body.appendChild(flake);
-    }
-  </script>
 </body>
 </html>
