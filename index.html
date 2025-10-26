@@ -1,125 +1,186 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>In Development</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Soosy.xyz — Kaleb Video Tracker</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #1e293b;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(120deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      overflow: hidden;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    /* Animated gradient background */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(56,189,248,0.15), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(56,189,248,0.1), transparent 60%);
+      animation: float 8s ease-in-out infinite alternate;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-20px) scale(1.02); }
+    }
 
-        @import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500&display=swap');
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1.2s ease;
+    }
 
-        body {
-            background: #000;
-            color: #fff;
-            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        .container {
-            text-align: center;
-            z-index: 10;
-            position: relative;
-        }
+    p {
+      font-size: 1rem;
+      color: #cbd5e1;
+    }
 
-        .dev-text {
-            font-size: 3.5rem;
-            font-weight: 400;
-            letter-spacing: 2px;
-            animation: pulse 2s ease-in-out infinite alternate;
-            
-            /* White glow stroke effect */
-            text-shadow: 
-                0 0 6px rgba(255, 255, 255, 0.8),
-                0 0 12px rgba(255, 255, 255, 0.6),
-                0 0 18px rgba(255, 255, 255, 0.4),
-                0 0 24px rgba(255, 255, 255, 0.3),
-                0 0 30px rgba(255, 255, 255, 0.2),
-                
-                /* Subtle stroke effect */
-                -1px -1px 0 rgba(255, 255, 255, 0.3),
-                1px -1px 0 rgba(255, 255, 255, 0.3),
-                -1px 1px 0 rgba(255, 255, 255, 0.3),
-                1px 1px 0 rgba(255, 255, 255, 0.3);
-        }
+    a {
+      display: inline-block;
+      margin-top: 16px;
+      background: var(--accent);
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    a:hover {
+      background: #7dd3fc;
+      transform: translateY(-2px);
+    }
 
-        @keyframes pulse {
-            from { opacity: 0.8; }
-            to { opacity: 1; }
-        }
+    .small {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-top: 20px;
+    }
 
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: #fff;
-            font-size: 1rem;
-            animation: fall linear infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @keyframes fall {
-            from {
-                transform: translateY(-100vh) rotate(0deg);
-            }
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-    </style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="dev-text">mihai is retarded</h1>
-    </div>
+  <div class="card" id="card">
+    <h1>Checking for new Kaleb videos…</h1>
+    <p>Please wait a moment.</p>
+    <div class="small">Powered by Soosy.xyz</div>
+  </div>
 
-    <script>
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.innerHTML = '❄';
-            
-            // Random horizontal position
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            
-            // Random animation duration (speed)
-            const duration = Math.random() * 3 + 2; // 2-5 seconds
-            snowflake.style.animationDuration = duration + 's';
-            
-            // Random size
-            const size = Math.random() * 0.8 + 0.6; // 0.6-1.4rem
-            snowflake.style.fontSize = size + 'rem';
-            
-            // Random opacity
-            snowflake.style.opacity = Math.random() * 0.8 + 0.2;
-            
-            document.body.appendChild(snowflake);
-            
-            // Remove snowflake after animation
-            setTimeout(() => {
-                if (snowflake.parentNode) {
-                    snowflake.parentNode.removeChild(snowflake);
-                }
-            }, duration * 1000);
+  <script>
+    const CHANNELS = [
+      "https://www.youtube.com/@KALEBCOLLINO",
+      "https://www.youtube.com/@KALEBCAU",
+      "https://www.youtube.com/@RobertJacksonWilliam",
+      "https://www.youtube.com/@MrCollinsStokes",
+      "https://www.youtube.com/@KalebCollinsHenburyStudent",
+      "https://www.youtube.com/@LALALALALALALA-y4h",
+      "https://www.youtube.com/@kalebcollinskaleb",
+      "https://www.youtube.com/@kalebcollinsvlogskalebcollins",
+      "https://www.youtube.com/@AlbertWestt",
+      "https://www.youtube.com/@kalebcollino-n7j",
+      "https://www.youtube.com/@kalebclip",
+      "https://www.youtube.com/@KalebsFirstDay"
+    ];
+
+    async function getChannelId(url) {
+      const res = await fetch(url);
+      const text = await res.text();
+      const match = text.match(/\"channelId\":\"(UC[0-9A-Za-z_-]{20,})\"/);
+      return match ? match[1] : null;
+    }
+
+    async function getLatestVideo(channelId) {
+      const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+      const res = await fetch(feedUrl);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, "text/xml");
+      const entry = xml.querySelector("entry");
+      if (!entry) return null;
+      const title = entry.querySelector("title")?.textContent;
+      const link = entry.querySelector("link")?.getAttribute("href");
+      const published = entry.querySelector("published")?.textContent;
+      return { title, link, published };
+    }
+
+    async function checkVideos() {
+      const card = document.getElementById("card");
+      try {
+        const results = [];
+        for (const url of CHANNELS) {
+          const id = await getChannelId(url);
+          if (id) {
+            const video = await getLatestVideo(id);
+            if (video) results.push(video);
+          }
         }
 
-        // Create snowflakes continuously
-        setInterval(createSnowflake, 100);
-        
-        // Create initial batch
-        for (let i = 0; i < 100; i++) {
-            setTimeout(createSnowflake, i * 50);
+        if (!results.length) {
+          card.innerHTML = "<h1>No videos found</h1><p>Try again later.</p>";
+          return;
         }
-    </script>
+
+        results.sort((a, b) => new Date(b.published) - new Date(a.published));
+        const latest = results[0];
+        const lastSeen = localStorage.getItem("lastVideo");
+
+        if (lastSeen !== latest.link) {
+          localStorage.setItem("lastVideo", latest.link);
+          card.innerHTML = `
+            <h1>🆕 A new Kaleb video has been posted!</h1>
+            <p><strong>${latest.title}</strong></p>
+            <a href="${latest.link}" target="_blank">Watch here</a>
+            <div class="small">Published: ${new Date(latest.published).toLocaleString()}</div>
+          `;
+        } else {
+          card.innerHTML = `
+            <h1>No new Kaleb videos yet</h1>
+            <p>Last video: <strong>${latest.title}</strong></p>
+            <a href="${latest.link}" target="_blank">Watch again</a>
+          `;
+        }
+      } catch (err) {
+        document.getElementById("card").innerHTML =
+          "<h1>Error</h1><p>Could not check videos. " + err.message + "</p>";
+      }
+    }
+
+    checkVideos();
+    setInterval(checkVideos, 300000); // every 5 minutes
+  </script>
 </body>
 </html>
